@@ -1,0 +1,39 @@
+service:
+  command-execution:
+    cleanup-commands-interval: 180
+    command-fetching-interval: 5
+    # global retry configuration
+    retries: 3
+    interval-seconds: 60
+    execution-group: global
+    execution-strategy: SimpleRetry
+    configurations:
+        - name: NotificationsCommands
+          command-names:
+            - ui-notification
+          retries: 5
+          interval-seconds: 30
+          execution-group: notifications
+          execution-strategy: FibonacciRetry
+  lock:
+    retries: 4
+    interval-ms: 500
+
+spring:
+  jpa:
+    show-sql: false
+    open-in-view: false
+    hibernate:
+#      ddl-auto: update
+      ddl-auto: validate
+  liquibase:
+    change-log: "classpath:scheduler-framework/changelog/master.xml"
+  h2:
+    console:
+      enabled: true
+  datasource:
+#    url: "jdbc:h2:file:~/test"
+    url: "jdbc:h2:mem:test;MODE=PostgreSQL"
+    username: sa
+    password:
+    driverClassName: "org.h2.Driver"
