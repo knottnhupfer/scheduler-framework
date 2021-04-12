@@ -1,6 +1,6 @@
 package com.sss.scheduler.components;
 
-import com.sss.scheduler.domain.Command;
+import com.sss.scheduler.domain.JobInstance;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -14,11 +14,11 @@ public class FibonacciRetryStrategy extends AbstractRetryStrategy {
   }
 
   @Override
-  public Instant calculateNextExecution(Command cmd, long executionDelay, long executedRetries) {
-    Assert.notNull(cmd.getCreationDate(), "creation date is not set");
+  public Instant calculateNextExecution(JobInstance job, long executionDelay, long executedRetries) {
+    Assert.notNull(job.getCreationDate(), "creation date is not set");
     Assert.isTrue(executionDelay > -1, "execution delay must be >= 0");
     Assert.isTrue(executedRetries > -1, "execution retries must be >= 0");
-    return cmd.getCreationDate().toInstant().plusSeconds(calculateIntervalsAmount(executedRetries) * executionDelay);
+    return job.getCreationDate().plusSeconds(calculateIntervalsAmount(executedRetries) * executionDelay);
   }
 
   private static long calculateIntervalsAmount(long executedRetries) {

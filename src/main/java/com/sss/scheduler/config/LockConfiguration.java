@@ -8,9 +8,9 @@ import java.util.List;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "service.lock")
+@ConfigurationProperties(prefix = "scheduler.lock")
 public class LockConfiguration {
 
   private Long retries = 4L;
-  private Long intervalMs = 500L;
+  private Long intervalMs = 750L;
 }

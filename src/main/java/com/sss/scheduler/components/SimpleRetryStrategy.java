@@ -1,6 +1,6 @@
 package com.sss.scheduler.components;
 
-import com.sss.scheduler.domain.Command;
+import com.sss.scheduler.domain.JobInstance;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -14,8 +14,8 @@ public class SimpleRetryStrategy extends AbstractRetryStrategy {
   }
 
   @Override
-  public Instant calculateNextExecution(Command cmd, long executionDelay, long executedRetries) {
-    Assert.notNull(cmd.getCreationDate(), "creation date is not set");
-    return cmd.getCreationDate().toInstant().plusSeconds(executionDelay * executedRetries);
+  public Instant calculateNextExecution(JobInstance job, long executionDelay, long executedRetries) {
+    Assert.notNull(job.getCreationDate(), "creation date is not set");
+    return job.getCreationDate().plusSeconds(executionDelay * (executedRetries + 1));
   }
 }

@@ -1,23 +1,26 @@
-service:
-  command-execution:
-    cleanup-commands-interval: 180
-    command-fetching-interval: 5
+scheduler:
+  job-execution:
+    max-jobs-per-node: 10
+    jobs-reservation-interval: 180
+    jobs-assigning-interval: 20
     # global retry configuration
     retries: 3
     interval-seconds: 60
     execution-group: global
     execution-strategy: SimpleRetry
     configurations:
-        - name: NotificationsCommands
-          command-names:
+        - name: NotificationsJobs
+          job-names:
             - ui-notification
+            - someOtherJobName
+            - secondFailingJob
           retries: 5
           interval-seconds: 30
           execution-group: notifications
           execution-strategy: FibonacciRetry
   lock:
     retries: 4
-    interval-ms: 500
+    interval-ms: 750
 
 spring:
   jpa:
@@ -27,7 +30,7 @@ spring:
 #      ddl-auto: update
       ddl-auto: validate
   liquibase:
-    change-log: "classpath:scheduler-framework/changelog/master.xml"
+    change-log: "classpath:changelog/scheduler-framework/master.xml"
   h2:
     console:
       enabled: true

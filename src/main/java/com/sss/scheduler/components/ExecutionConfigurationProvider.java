@@ -1,6 +1,6 @@
 package com.sss.scheduler.components;
 
-import com.sss.scheduler.config.CommandsSchedulerConfiguration;
+import com.sss.scheduler.config.JobsSchedulerConfiguration;
 import com.sss.scheduler.config.SchedulerConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,12 +30,12 @@ public class ExecutionConfigurationProvider {
   @PostConstruct
   void initializeExecutionConfigurations() {
     createDefaultExecutionConfiguration();
-    createSpecificCommandExecutionConfigurations();
+    createSpecificJobExecutionConfigurations();
   }
 
-  public ExecutionConfiguration getExecutionConfigurationForCommand(String commandName) {
-    if(executionConfigurations.containsKey(commandName)) {
-      return executionConfigurations.get(commandName);
+  public ExecutionConfiguration getExecutionConfigurationForJob(String jobName) {
+    if(executionConfigurations.containsKey(jobName)) {
+      return executionConfigurations.get(jobName);
     }
     return executionConfiguration;
   }
@@ -46,21 +46,21 @@ public class ExecutionConfigurationProvider {
     executionConfiguration.setIntervalSeconds(schedulerConfiguration.getIntervalSeconds());
     executionConfiguration.setExecutionGroup(schedulerConfiguration.getExecutionGroup());
     executionConfiguration.setRetryStrategy(getRetryStrategyByName(schedulerConfiguration.getExecutionStrategy()));
-    log.info("Registered default command execution: {}", executionConfiguration);
+    log.info("Registered default job execution: {}", executionConfiguration);
   }
 
-  private void createSpecificCommandExecutionConfigurations() {
-    List<CommandsSchedulerConfiguration> configurations = schedulerConfiguration.getConfigurations();
+  private void createSpecificJobExecutionConfigurations() {
+    List<JobsSchedulerConfiguration> configurations = schedulerConfiguration.getConfigurations();
     configurations.forEach(config -> {
       ExecutionConfiguration executionConfiguration = new ExecutionConfiguration();
       executionConfiguration.setRetries(config.getRetries());
       executionConfiguration.setIntervalSeconds(config.getIntervalSeconds());
       executionConfiguration.setExecutionGroup(config.getExecutionGroup());
       executionConfiguration.setRetryStrategy(getRetryStrategyByName(config.getExecutionStrategy()));
-      config.getCommandNames().forEach(commandName -> {
-        executionConfigurations.put(commandName, executionConfiguration);
+      config.getJobNames().forEach(jobName -> {
+        executionConfigurations.put(jobName, executionConfiguration);
       });
-      log.info("Registered commands execution: {}", config);
+      log.info("Registered jobs execution: {}", config);
     });
   }
 
