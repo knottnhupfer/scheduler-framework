@@ -78,7 +78,7 @@
             <uniqueVersion>false</uniqueVersion>
             <id>github</id>
             <name>Github packages repository</name>
-            <url>https://maven.pkg.github.com/knottnhupfer</url>
+            <url>https://maven.pkg.github.com/knottnhupfer/scheduler-framework</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>
