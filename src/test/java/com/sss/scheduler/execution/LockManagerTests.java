@@ -35,7 +35,7 @@ public class LockManagerTests {
   @Test
   void verifyLockTimeoutTest() {
     String lockName = "lock-" + UUID.randomUUID().toString().substring(0,6);
-    boolean lockAcquired = lockManager.lock(lockName, Duration.ofSeconds(2));
+    boolean lockAcquired = lockManager.lock(lockName, Duration.ofSeconds(1));
     Assert.isTrue(lockAcquired, "lock not acquired");
 
     lockAcquired = lockManager.lock(lockName, "second-node", Duration.ofSeconds(1));

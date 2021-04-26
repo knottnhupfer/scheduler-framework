@@ -19,8 +19,8 @@ scheduler:
           execution-group: notifications
           execution-strategy: FibonacciRetry
   lock:
-    retries: 4
-    interval-ms: 750
+    retries: 5
+    interval-ms: 300
 
 spring:
   jpa:
