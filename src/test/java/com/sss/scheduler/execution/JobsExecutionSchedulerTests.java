@@ -2,6 +2,7 @@ package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobMap;
+import com.sss.scheduler.domain.JobStatus;
 import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
 import com.sss.scheduler.service.JobService;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 public class JobsExecutionSchedulerTests {
@@ -38,6 +40,19 @@ public class JobsExecutionSchedulerTests {
     jobRepository.save(job);
 
     jobsExecutionScheduler.executeAssignedJobs();
+
+    JobInstance executedJob = jobRepository.findById(job.getId()).get();
+    Assert.assertNull(executedJob.getExecuteBy());
+    Assert.assertNull(executedJob.getReservedUntil());
+    Assert.assertNull(executedJob.getExecutionResultMessage());
+    Assert.assertNull(executedJob.getNextExecutionDate());
+
+    Assert.assertNotNull(executedJob.getLastExecutionDate());
+    Assert.assertNotNull(executedJob.getExecutionDuration());
+    Assert.assertNotNull(executedJob.getCreationDate());
+    Assert.assertNotNull(executedJob.getPriority());
+
+    Assert.assertEquals(JobStatus.COMPLETED_SUCCESSFUL, executedJob.getStatus());
 
     Long executedTimes = IncreaseByOneJob.getCounterValue("schedulerSingleJob");
     Assert.assertEquals(Long.valueOf(1), executedTimes);
