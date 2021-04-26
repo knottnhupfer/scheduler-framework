@@ -33,7 +33,7 @@ spring:
     change-log: "classpath:changelog/scheduler-framework/master.xml"
   h2:
     console:
-      enabled: true
+      enabled: false
   datasource:
 #    url: "jdbc:h2:file:~/test"
     url: "jdbc:h2:mem:test;MODE=PostgreSQL"
