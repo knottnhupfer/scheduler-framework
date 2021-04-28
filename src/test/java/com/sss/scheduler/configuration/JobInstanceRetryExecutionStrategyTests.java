@@ -145,9 +145,10 @@ class JobInstanceRetryExecutionStrategyTests {
   private void createJobsWithNameAndUpdateExecutionParameters(String jobName, long retries) {
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
-    JobMap jobMap = new JobMap();
-    jobMap.putLongValue(KEY_RETRIES, retries);
-    jobInstance.setJobMap(jobMap);
+//    JobMap jobMap = new JobMap();
+    jobInstance.setExecutions(retries);
+//    jobMap.putLongValue(KEY_RETRIES, retries);
+//    jobInstance.setJobMap(jobMap);
     jobService.createJob(jobInstance);
 
     List<JobInstance> jobs = jobRepository.findAllJobsByName(jobName);

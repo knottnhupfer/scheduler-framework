@@ -28,6 +28,7 @@ class JobInstancePersistenceTests {
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
     jobInstance.setPriority(10);
+    jobInstance.setExecutions(0L);
 
     JobMap jobMap = new JobMap();
     jobMap.putValue("jobName", jobName);
@@ -50,6 +51,7 @@ class JobInstancePersistenceTests {
     String jobName = "ui-notification";
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
+    jobInstance.setExecutions(0L);
     jobService.createJob(jobInstance);
 
     JobInstance fetchedJobInstance = jobTestService.getJobByName(jobName);
@@ -62,6 +64,7 @@ class JobInstancePersistenceTests {
     String jobName = "testJob-" + UUID.randomUUID().toString().substring(0, 4);
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
+    jobInstance.setExecutions(0L);
     jobInstance.setPriority(1207);
     jobService.createJob(jobInstance);
 

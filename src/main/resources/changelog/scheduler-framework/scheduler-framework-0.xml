@@ -37,6 +37,9 @@
             <column name="creation_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="executions" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
             <column name="last_execution_date" type="timestamp" />
             <column name="next_execution_date" type="timestamp" />
             <column name="status" type="varchar(128)">

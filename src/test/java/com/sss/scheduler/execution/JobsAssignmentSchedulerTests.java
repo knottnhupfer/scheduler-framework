@@ -94,6 +94,7 @@ public class JobsAssignmentSchedulerTests {
       String JobName = "JobName-" + UUID.randomUUID().toString().substring(0, 4);
       JobInstance jobInstance = new JobInstance();
       jobInstance.setJobName(JobName);
+      jobInstance.setExecutions(0L);
       jobService.createJob(jobInstance);
       JobNames.add(JobName);
     }

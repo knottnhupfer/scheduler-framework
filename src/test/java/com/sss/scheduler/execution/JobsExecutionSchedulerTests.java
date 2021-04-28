@@ -37,6 +37,7 @@ public class JobsExecutionSchedulerTests {
 
     JobInstance job = jobRepository.findAllJobsByName("increaseByOneJob").get(0);
     job.setExecuteBy(lockManager.getDefaultLockName());
+    job.setExecutions(0L);
     jobRepository.save(job);
 
     jobsExecutionScheduler.executeAssignedJobs();
@@ -68,6 +69,7 @@ public class JobsExecutionSchedulerTests {
       String JobName = "increaseByOneJob";
       JobInstance jobInstance = new JobInstance();
       jobInstance.setJobName(JobName);
+      jobInstance.setExecutions(0L);
 
       JobMap jobMap = new JobMap();
       jobMap.putValue(IncreaseByOneJob.COUNTER_NAME, counterName);

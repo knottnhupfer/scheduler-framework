@@ -26,6 +26,9 @@ public class JobInstance {
   private String jobName;
 
   @Column(nullable = false)
+  private Long executions;
+
+  @Column(nullable = false)
   private Integer priority;
 
   @Column(nullable = false)

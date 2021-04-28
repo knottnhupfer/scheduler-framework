@@ -19,8 +19,6 @@ import java.util.List;
 @Service
 public class JobsExecutionScheduler {
 
-  public static String JOB_PARAM_EXECUTED_RETRIES = "executedRetries";
-
   @Resource
   private LockManager lockManager;
 
@@ -37,7 +35,7 @@ public class JobsExecutionScheduler {
   public void executeAssignedJobs() {
     List<JobInstance> assignedJobs = jobRepository.findAssignedjobs(lockManager.getDefaultLockName());
     for(JobInstance job : assignedJobs) {
-      log.info("Execute job:{} with id:{}", job.getId(), job.getJobName());
+      log.debug("Execute job:{} with id:{}", job.getId(), job.getJobName());
       executeJob(job);
     }
   }
@@ -54,13 +52,12 @@ public class JobsExecutionScheduler {
       log.error("Error while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
       log.debug("Exception stacktrace is:\n", e);
       ExecutionConfiguration executionConfiguration = executionConfigurationProvider.getExecutionConfigurationForJob(job.getJobName());
-      Long executedRetries = job.getJobMap().getLongValue(JOB_PARAM_EXECUTED_RETRIES, 0L);
 
-      if(executionConfiguration.getRetries() > executedRetries) {
+      if(executionConfiguration.getRetries() > job.getExecutions()) {
         updateExecutionParametersAfterError(job, executionConfiguration, e);
-        log.warn("Updated {}", job.getJobDescription());
+        log.info("Updated {} after {}/{} retries.", job.getJobDescription(), job.getExecutions(), executionConfiguration.getRetries());
       } else {
-        log.warn("Completed errornous {} after {}/{} retries.", job.getJobDescription(), executedRetries, executionConfiguration.getRetries());
+        log.warn("Completed errornous {} after {}/{} retries.", job.getJobDescription(), job.getExecutions(), executionConfiguration.getRetries());
         job.setStatus(JobStatus.COMPLETED_ERRONEOUS);
         job.setNextExecutionDate(null);
       }
@@ -74,11 +71,10 @@ public class JobsExecutionScheduler {
   }
 
   private void updateExecutionParametersAfterError(JobInstance job, ExecutionConfiguration executionConfiguration, Exception e) {
-    Long executedRetries = job.getJobMap().getLongValue(JOB_PARAM_EXECUTED_RETRIES, 0L);
     RetryStrategy retryStrategy = executionConfiguration.getRetryStrategy();
-    Instant nextExecution = retryStrategy.calculateNextExecution(job, executionConfiguration.getIntervalSeconds(), executedRetries);
-    job.getJobMap().putLongValue(JOB_PARAM_EXECUTED_RETRIES, executedRetries + 1);
+    Instant nextExecution = retryStrategy.calculateNextExecution(job, executionConfiguration.getIntervalSeconds(), job.getExecutions());
     job.setNextExecutionDate(nextExecution);
+    job.setExecutions(job.getExecutions() + 1);
     job.setStatus(JobStatus.ERRORNOUS_RETRIGGER);
     job.setExecutionResultMessage(e.getMessage());
   }
