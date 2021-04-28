@@ -33,7 +33,7 @@ public class JobsExecutionScheduler {
   @Resource
   private ExecutionConfigurationProvider executionConfigurationProvider;
 
-  @Scheduled(fixedRate = 15_000)
+  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-execution-interval}")
   public void executeAssignedJobs() {
     List<JobInstance> assignedJobs = jobRepository.findAssignedjobs(lockManager.getDefaultLockName());
     for(JobInstance job : assignedJobs) {
@@ -51,13 +51,16 @@ public class JobsExecutionScheduler {
       job.setStatus(JobStatus.COMPLETED_SUCCESSFUL);
       job.setExecutionDuration(System.currentTimeMillis() - startTime);
     } catch (Exception e) {
-      log.error("Error while processing job:{} with id:{}",job.getJobName(), job.getId(), e);
+      log.error("Error while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
+      log.debug("Exception stacktrace is:\n", e);
       ExecutionConfiguration executionConfiguration = executionConfigurationProvider.getExecutionConfigurationForJob(job.getJobName());
       Long executedRetries = job.getJobMap().getLongValue(JOB_PARAM_EXECUTED_RETRIES, 0L);
 
       if(executionConfiguration.getRetries() > executedRetries) {
         updateExecutionParametersAfterError(job, executionConfiguration, e);
+        log.warn("Updated {}", job.getJobDescription());
       } else {
+        log.warn("Completed errornous {} after {}/{} retries.", job.getJobDescription(), executedRetries, executionConfiguration.getRetries());
         job.setStatus(JobStatus.COMPLETED_ERRONEOUS);
         job.setNextExecutionDate(null);
       }

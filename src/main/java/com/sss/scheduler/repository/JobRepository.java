@@ -10,9 +10,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 public interface JobRepository extends JpaRepository<JobInstance, Long> {
+
+  List<JobStatus> ASSIGNABLE_JOB_STATUS = Arrays.asList(JobStatus.ERRORNOUS_RETRIGGER, JobStatus.IN_PROGRESS, JobStatus.OPEN);
 
   @Query("SELECT j FROM jobs j WHERE j.jobName = :jobName ORDER BY j.creationDate DESC")
   List<JobInstance> findAllJobsByName(@Param("jobName") String jobName);
@@ -26,17 +29,24 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
   void assignJobsToHostname(@Param("executeBy") String executeBy, @Param("reservedUntil") Instant reservedUntil,
                             @Param("newStatus") JobStatus newStatus, @Param("jobsToAssign") List<Long> jobsToAssign);
 
+  @Modifying
+  @Query("UPDATE jobs j SET j.reservedUntil = :reservedUntil, j.executeBy = :executeBy WHERE j.id IN :jobsToAssign")
+  void assignJobsToHostname(@Param("executeBy") String executeBy, @Param("reservedUntil") Instant reservedUntil,
+                            @Param("jobsToAssign") List<Long> jobsToAssign);
+
   default List<Long> findJobsToAssign(String executeBy, int maxJobs) {
     List<Long> alreadyAssignedJobs = findJobsToAssign(executeBy);
     if(alreadyAssignedJobs.size() >= maxJobs) {
       return alreadyAssignedJobs;
     }
-    alreadyAssignedJobs.addAll(findJobsToAssign(PageRequest.of(0, maxJobs - alreadyAssignedJobs.size())));
+    alreadyAssignedJobs.addAll(findJobsToAssign(
+            Instant.now(), ASSIGNABLE_JOB_STATUS, PageRequest.of(0, maxJobs - alreadyAssignedJobs.size())));
     return alreadyAssignedJobs;
   }
 
-  @Query("SELECT c.id FROM jobs c WHERE c.reservedUntil IS NULL ORDER BY c.creationDate ASC")
-  List<Long> findJobsToAssign(Pageable pageable);
+  @Query("SELECT c.id FROM jobs c WHERE c.reservedUntil IS NULL AND c.status IN :openStatus AND c.nextExecutionDate < :now ORDER BY c.creationDate ASC")
+  List<Long> findJobsToAssign(
+          @Param("now") Instant now, @Param("openStatus") List<JobStatus> openStatus, Pageable pageable);
 
   @Query("SELECT c.id FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.creationDate ASC")
   List<Long> findJobsToAssign(@Param("executedBy") String executedBy);

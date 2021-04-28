@@ -1,8 +1,9 @@
 scheduler:
   job-execution:
     max-jobs-per-node: 10
+    jobs-execution-interval: 15000
     jobs-reservation-interval: 180
-    jobs-assigning-interval: 20
+    jobs-assigning-interval: 15000
     # global retry configuration
     retries: 3
     interval-seconds: 60

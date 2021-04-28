@@ -1,10 +1,20 @@
 package com.sss.scheduler.domain;
 
 public enum JobStatus {
-  OPEN,
-  IN_PROGRESS,
-  ERRORNOUS_RETRIGGER,
-  COMPLETED_SUCCESSFUL,
-  COMPLETED_ERRONEOUS,
-  CANCELLED;
+  OPEN(false),
+  IN_PROGRESS(false),
+  ERRORNOUS_RETRIGGER(false),
+  COMPLETED_SUCCESSFUL(true),
+  COMPLETED_ERRONEOUS(true),
+  CANCELLED(true);
+
+  private boolean finalStatus;
+
+  JobStatus(boolean finalStatus) {
+    this.finalStatus = finalStatus;
+  }
+
+  public boolean isFinal() {
+    return finalStatus;
+  }
 }

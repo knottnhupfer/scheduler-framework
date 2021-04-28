@@ -1,13 +1,9 @@
 package com.sss.scheduler.service;
 
-import com.sss.scheduler.components.ExecutionConfiguration;
-import com.sss.scheduler.components.ExecutionConfigurationProvider;
-import com.sss.scheduler.components.RetryStrategy;
 import com.sss.scheduler.config.SchedulerConfiguration;
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobMap;
 import com.sss.scheduler.domain.JobStatus;
-import com.sss.scheduler.execution.JobsExecutionScheduler;
 import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
@@ -46,7 +41,6 @@ public class JobService {
     }
     job.setExecuteBy(null);
     job.setNextExecutionDate(Instant.now());
-    // jobsExecutionScheduler.updateExecutionParameters(job);
     jobRepository.save(job);
   }
 
@@ -61,7 +55,7 @@ public class JobService {
       return;
     }
     Instant reservedUntil = now.plusSeconds(schedulerConfiguration.getJobsReservationInterval());
-    jobRepository.assignJobsToHostname(lockManager.getDefaultLockName(), reservedUntil, JobStatus.OPEN, jobIdsToAssign);
+    jobRepository.assignJobsToHostname(lockManager.getDefaultLockName(), reservedUntil, jobIdsToAssign);
     log.info("Assign jobs {} to executer {}", jobIdsToAssign, lockManager.getDefaultLockName());
   }
 }
