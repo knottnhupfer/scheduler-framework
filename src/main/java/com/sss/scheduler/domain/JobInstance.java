@@ -58,7 +58,7 @@ public class JobInstance {
 
   private String executionResultMessage;
 
-  public String getJobDescription() {
+  public String getShortDescription() {
     return String.format("Job(id:%d) '%s' with state:%s and next execution:%s", id, jobName, status, nextExecutionDate);
   }
 }

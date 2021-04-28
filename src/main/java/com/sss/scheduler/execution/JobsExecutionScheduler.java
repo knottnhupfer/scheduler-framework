@@ -49,6 +49,7 @@ public class JobsExecutionScheduler {
       job.setStatus(JobStatus.COMPLETED_SUCCESSFUL);
       job.setExecutionDuration(System.currentTimeMillis() - startTime);
       job.setExecutions(job.getExecutions() + 1);
+      log.info("Successfully terminated job {}", job.getShortDescription());
     } catch (Exception e) {
       log.error("Error while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
       log.debug("Exception stacktrace is:\n", e);
@@ -56,11 +57,11 @@ public class JobsExecutionScheduler {
 
       if(executionConfiguration.getRetries() > job.getExecutions()) {
         updateExecutionParametersAfterError(job, executionConfiguration, e);
-        log.info("Updated {} after {}/{} retries.", job.getJobDescription(), job.getExecutions() - 1, executionConfiguration.getRetries());
+        log.info("Updated {} after {}/{} retries.", job.getShortDescription(), job.getExecutions() - 1, executionConfiguration.getRetries());
       } else {
         job.setStatus(JobStatus.COMPLETED_ERRONEOUS);
         job.setNextExecutionDate(null);
-        log.warn("Completed errornous {} after {}/{} retries.", job.getJobDescription(), job.getExecutions(), executionConfiguration.getRetries());
+        log.warn("Completed errornous {} after {}/{} retries.", job.getShortDescription(), job.getExecutions(), executionConfiguration.getRetries());
       }
     }
 
