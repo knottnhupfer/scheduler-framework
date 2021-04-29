@@ -1,5 +1,6 @@
 package com.sss.scheduler.execution;
 
+import com.sss.scheduler.config.SchedulerConfiguration;
 import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.service.JobService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +21,17 @@ public class JobsAssignmentScheduler {
   private boolean applicationActive = false;
 
   @Resource
+  private JobService jobService;
+
+  @Resource
   private LockManager lockManager;
 
   @Resource
-  private JobService jobService;
+  private SchedulerConfiguration schedulerConfiguration;
 
   @EventListener(classes = { ContextStartedEvent.class })
   public void enableExecuter() {
-    applicationActive = true;
+    applicationActive = schedulerConfiguration.isEnabled();
   }
 
   @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-assigning-interval}")

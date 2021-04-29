@@ -39,6 +39,7 @@ public class JobService {
     if(job.getPriority() == null || job.getPriority() > MAX_PRIORITY_AND_DEFAULT) {
       job.setPriority(MAX_PRIORITY_AND_DEFAULT);
     }
+    job.setExecutions(0L);
     job.setExecuteBy(null);
     job.setNextExecutionDate(Instant.now());
     jobRepository.save(job);

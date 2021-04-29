@@ -1,7 +1,6 @@
 package com.sss.scheduler.configuration;
 
 import com.sss.scheduler.domain.JobInstance;
-import com.sss.scheduler.domain.JobMap;
 import com.sss.scheduler.domain.JobStatus;
 import com.sss.scheduler.execution.JobsExecutionScheduler;
 import com.sss.scheduler.lock.LockManager;
@@ -20,8 +19,6 @@ import java.util.List;
 
 @SpringBootTest
 class JobInstanceRetryExecutionStrategyTests {
-
-  private static String KEY_RETRIES = "executedRetries";
 
   public final static String JOB_NAME = "failingJob";
   public final static String JOB_NAME_FIBONACCI = "secondFailingJob";
@@ -135,7 +132,7 @@ class JobInstanceRetryExecutionStrategyTests {
     JobInstance fetchedJobInstance = jobTestService.getJobByName(JOB_NAME);
 
     Assert.assertNull("verify nextExecutionDate is null", fetchedJobInstance.getNextExecutionDate());
-
+    Assert.assertEquals(JobStatus.COMPLETED_ERRONEOUS, fetchedJobInstance.getStatus());
   }
 
   private void cleanupJobs() {
@@ -145,11 +142,11 @@ class JobInstanceRetryExecutionStrategyTests {
   private void createJobsWithNameAndUpdateExecutionParameters(String jobName, long retries) {
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
-//    JobMap jobMap = new JobMap();
-    jobInstance.setExecutions(retries);
-//    jobMap.putLongValue(KEY_RETRIES, retries);
-//    jobInstance.setJobMap(jobMap);
     jobService.createJob(jobInstance);
+
+    JobInstance createdJob = jobRepository.findById(jobInstance.getId()).get();
+    createdJob.setExecutions(retries);
+    jobRepository.save(createdJob);
 
     List<JobInstance> jobs = jobRepository.findAllJobsByName(jobName);
     jobs.stream().forEach(job -> {
@@ -158,7 +155,5 @@ class JobInstanceRetryExecutionStrategyTests {
       jobRepository.save(job);
     });
     jobsExecutionScheduler.executeAssignedJobs();
-    jobs = jobRepository.findAllJobsByName(jobName);
-    System.out.println("TEST");
   }
 }

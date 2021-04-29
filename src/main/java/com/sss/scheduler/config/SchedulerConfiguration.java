@@ -13,6 +13,7 @@ import java.util.List;
 public class SchedulerConfiguration {
 
   private Long retries;
+  private boolean enabled = true;
   private Long intervalSeconds;
   private String executionGroup;
   private String executionStrategy;

@@ -1,5 +1,6 @@
 scheduler:
   job-execution:
+    enabled: true
     max-jobs-per-node: 10
     jobs-execution-interval: 15000
     jobs-reservation-interval: 180
