@@ -57,6 +57,6 @@ public class JobService {
     }
     Instant reservedUntil = now.plusSeconds(schedulerConfiguration.getJobsReservationInterval());
     jobRepository.assignJobsToHostname(lockManager.getDefaultLockName(), reservedUntil, jobIdsToAssign);
-    log.info("Assign jobs {} to executer {}", jobIdsToAssign, lockManager.getDefaultLockName());
+    log.debug("Assign jobs {} to executer {}", jobIdsToAssign, lockManager.getDefaultLockName());
   }
 }

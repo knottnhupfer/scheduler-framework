@@ -4,6 +4,7 @@ public enum JobStatus {
   OPEN(false),
   IN_PROGRESS(false),
   ERRORNOUS_RETRIGGER(false),
+  BUSINESS_ERROR(true),
   COMPLETED_SUCCESSFUL(true),
   COMPLETED_ERRONEOUS(true),
   CANCELLED(true);

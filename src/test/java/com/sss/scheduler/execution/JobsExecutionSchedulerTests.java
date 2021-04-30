@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 public class JobsExecutionSchedulerTests {
@@ -33,7 +32,7 @@ public class JobsExecutionSchedulerTests {
 
   @Test
   public void executeSingleCommand() {
-    createNewJob("schedulerSingleJob");
+    createNewJob("increaseByOneJob", "schedulerSingleJob");
 
     JobInstance job = jobRepository.findAllJobsByName("increaseByOneJob").get(0);
     job.setExecuteBy(lockManager.getDefaultLockName());
@@ -59,24 +58,47 @@ public class JobsExecutionSchedulerTests {
     Assert.assertEquals(Long.valueOf(1), executedTimes);
   }
 
-  private String createNewJob(String counterName) {
-    return createNewJob(counterName, 1).get(0);
+  @Test
+  public void businessExceptionTest() {
+    jobRepository.deleteAll();
+    createNewJob("businessErrorJob", "dummyCounter");
+    assignCreatedJob("businessErrorJob");
+    jobsExecutionScheduler.executeAssignedJobs();
+
+    JobInstance job = jobRepository.findAllJobsByName("businessErrorJob").get(0);
+    Assert.assertNull(job.getExecuteBy());
+    Assert.assertNull(job.getReservedUntil());
+    Assert.assertNull(job.getNextExecutionDate());
+    Assert.assertNotNull(job.getLastExecutionDate());
+    Assert.assertNotNull(job.getExecutionDuration());
+
+    Assert.assertEquals(JobStatus.BUSINESS_ERROR, job.getStatus());
+    Assert.assertEquals("Business error happened.", job.getExecutionResultMessage());
   }
 
-  private List<String> createNewJob(String counterName, int jobsAmounts) {
+  private String createNewJob(String jobName, String counterName) {
+    return createNewJob(jobName, counterName, 1).get(0);
+  }
+
+  private List<String> createNewJob(String jobName, String counterName, int jobsAmounts) {
     List<String> jobNames = new ArrayList<>();
     for(int i = 0; i < jobsAmounts; i++) {
-      String JobName = "increaseByOneJob";
       JobInstance jobInstance = new JobInstance();
-      jobInstance.setJobName(JobName);
-      jobInstance.setExecutions(0L);
+      jobInstance.setJobName(jobName);
 
       JobMap jobMap = new JobMap();
       jobMap.putValue(IncreaseByOneJob.COUNTER_NAME, counterName);
       jobInstance.setJobMap(jobMap);
       jobService.createJob(jobInstance);
-      jobNames.add(JobName);
+      jobNames.add(jobName);
     }
     return jobNames;
+  }
+
+  private void assignCreatedJob(String jobName) {
+    JobInstance job = jobRepository.findAllJobsByName(jobName).get(0);
+    job.setExecuteBy(lockManager.getDefaultLockName());
+    job.setExecutions(0L);
+    jobRepository.save(job);
   }
 }

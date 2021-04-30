@@ -49,10 +49,16 @@ public class JobsExecutionScheduler {
       job.setStatus(JobStatus.COMPLETED_SUCCESSFUL);
       job.setExecutionDuration(System.currentTimeMillis() - startTime);
       job.setExecutions(job.getExecutions() + 1);
-      log.info("Successfully terminated job {}", job.getShortDescription());
+      log.debug("Successfully terminated job {}", job.getShortDescription());
+    } catch (BusinessException e) {
+      log.error("BUSINESS_ERROR while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
+      log.trace("Exception stacktrace is:\n", e);
+      job.setExecutionResultMessage(e.getMessage());
+      job.setStatus(JobStatus.BUSINESS_ERROR);
+      job.setNextExecutionDate(null);
     } catch (Exception e) {
       log.error("Error while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
-      log.debug("Exception stacktrace is:\n", e);
+      log.trace("Exception stacktrace is:\n", e);
       ExecutionConfiguration executionConfiguration = executionConfigurationProvider.getExecutionConfigurationForJob(job.getJobName());
 
       if(executionConfiguration.getRetries() > job.getExecutions()) {

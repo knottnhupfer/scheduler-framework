@@ -15,6 +15,12 @@ public class JobsExecutorTests {
   @Resource
   private JobsExecutor jobsExecutor;
 
+  @Resource
+  private JobsExecutionScheduler jobsExecutionScheduler;
+
+  @Resource
+  private JobsAssignmentScheduler jobsAssignmentScheduler;
+
   @Test
   public void noJobFound() {
     try {
@@ -41,6 +47,19 @@ public class JobsExecutorTests {
       fail();
     } catch (Exception e) {
       Assert.assertEquals("Execute failing job.", e.getMessage());
+    }
+  }
+
+  @Test
+  public void executeBusinessErrorJob() {
+    jobsAssignmentScheduler.assignJobsToExecute();
+    jobsExecutionScheduler.executeAssignedJobs();
+
+    try {
+      jobsExecutor.executeJob("businessErrorJob", new JobMap());
+      fail();
+    } catch (Exception e) {
+      Assert.assertEquals("Business error happened.", e.getMessage());
     }
   }
 }

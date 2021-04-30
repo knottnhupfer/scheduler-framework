@@ -48,13 +48,13 @@ public class LockJdbcConnector {
               .setParameter(3, lockedBy)
               .setParameter(4, lockedUntil)
               .executeUpdate();
-      log.info("Created new lock; name:{}, lockedBy:{}, lockedUntil:{}", name, lockedBy, lockedUntil);
+      log.debug("Created new lock; name:{}, lockedBy:{}, lockedUntil:{}", name, lockedBy, lockedUntil);
     }
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void unlock(String name, String lockedBy) {
-    log.info("Unlock {} lockedBy {}", name, lockedBy);
+    log.debug("Unlock {} lockedBy {}", name, lockedBy);
     simpleLockRepository.deleteAllByNameAndLockedBy(name, lockedBy);
   }
 
