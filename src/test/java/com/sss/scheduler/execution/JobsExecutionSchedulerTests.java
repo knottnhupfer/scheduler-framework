@@ -72,6 +72,7 @@ public class JobsExecutionSchedulerTests {
     Assert.assertNotNull(job.getLastExecutionDate());
     Assert.assertNotNull(job.getExecutionDuration());
 
+    Assert.assertEquals(Long.valueOf(1L), job.getExecutions());
     Assert.assertEquals(JobStatus.BUSINESS_ERROR, job.getStatus());
     Assert.assertEquals("Business error happened.", job.getExecutionResultMessage());
   }

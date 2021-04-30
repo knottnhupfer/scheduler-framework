@@ -56,6 +56,7 @@ public class JobsExecutionScheduler {
       job.setExecutionResultMessage(e.getMessage());
       job.setStatus(JobStatus.BUSINESS_ERROR);
       job.setNextExecutionDate(null);
+      job.setExecutions(job.getExecutions() + 1);
     } catch (Exception e) {
       log.error("Error while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
       log.trace("Exception stacktrace is:\n", e);
