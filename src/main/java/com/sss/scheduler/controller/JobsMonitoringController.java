@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 import javax.annotation.Resource;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -20,9 +22,13 @@ public abstract class JobsMonitoringController {
 
   @GetMapping(value = "/api/jobs/{status}", produces = "application/json")
   public ResponseEntity<JobsReponse> getJobs(@PathVariable("status") JobStatus status,
-                     @RequestParam("startDate") OffsetDateTime startDate, @RequestParam("endDate") OffsetDateTime endDate) {
+                 @RequestParam(value = "startDate", required = false) OffsetDateTime startDate,
+                 @RequestParam(value = "endDate", required = false) OffsetDateTime endDate) {
     log.debug("Retrieve jobs for state:{} from:{} to:{}", status, startDate, endDate);
-    List<JobShort> jobs = jobsMonitoringService.getJobs(status, startDate.toInstant(), endDate.toInstant());
+
+    Instant start = startDate != null ? startDate.toInstant() : Instant.now().minus(Duration.ofDays(1));
+    Instant end = endDate != null ? endDate.toInstant() : Instant.now();
+    List<JobShort> jobs = jobsMonitoringService.getJobs(status, start, end);
     return ResponseEntity.ok(JobsReponse.builder().jobs(jobs).build());
   }
 }

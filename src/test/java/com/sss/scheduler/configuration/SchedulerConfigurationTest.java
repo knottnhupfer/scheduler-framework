@@ -15,7 +15,7 @@ public class SchedulerConfigurationTest {
   private ExecutionConfigurationProvider executionConfigurationProvider;
 
   @Test
-  public void test() {
+  public void schedulerConfigurationTest() {
     ExecutionConfiguration executionConfiguration = executionConfigurationProvider.getExecutionConfigurationForJob("someOtherJobName");
     Assert.assertNotNull(executionConfiguration);
     Assert.assertEquals("notifications", executionConfiguration.getExecutionGroup());

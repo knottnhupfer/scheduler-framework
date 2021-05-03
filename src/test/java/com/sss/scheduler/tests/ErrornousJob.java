@@ -4,8 +4,10 @@ import com.sss.scheduler.domain.ExecutionMap;
 import com.sss.scheduler.execution.Job;
 import org.springframework.stereotype.Component;
 
-@Component("failingJob")
+@Component(ErrornousJob.NAME)
 public class ErrornousJob implements Job {
+
+  public static final String NAME = "failingJob";
 
   @Override
   public void execute(ExecutionMap map) {

@@ -53,4 +53,13 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
 
   @Query("SELECT c FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.priority ASC, c.creationDate ASC")
   List<JobInstance> findAssignedjobs(@Param("executedBy") String executedBy);
+
+  default List<JobInstance> findJobsByStates(List<JobStatus> status, Instant from, Instant to, int maxJobs) {
+    return findJobsByStates(status, from, to, PageRequest.of(0, maxJobs));
+  }
+
+  @Query("SELECT j FROM jobs j WHERE j.creationDate >= :fromDate AND j.creationDate <= :toDate " +
+                 "AND j.status IN :status ORDER BY j.creationDate ASC")
+  List<JobInstance> findJobsByStates(
+          @Param("status") List<JobStatus> status, @Param("fromDate") Instant from, @Param("toDate") Instant to, Pageable pageable);
 }
