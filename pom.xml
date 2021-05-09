@@ -5,7 +5,7 @@
 
     <groupId>com.smooth.systems.solutions.scheduler</groupId>
     <artifactId>scheduler-framework</artifactId>
-    <version>1.0.0</version>
+    <version>master-SNAPSHOT</version>
     <name>scheduler-framework</name>
     <description>Simple scheduling framework</description>
 
