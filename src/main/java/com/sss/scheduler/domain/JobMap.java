@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.util.Assert;
 
 import javax.persistence.Transient;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,18 +13,28 @@ public class JobMap implements ExecutionMap {
 
   private Map<String, String> mappings = new HashMap<>();
 
-  @Transient
-  public String getStringValue(String key) {
-    return mappings.get(key);
+  public String loadStringValue(String key) {
+    String value = mappings.get(key);
+    if(value == null) {
+      throw new IllegalStateException(String.format("No value found for key: {}", key));
+    } else {
+      return value;
+    }
   }
 
   public Long loadLongValue(String key) {
-    String value = mappings.get(key);
-    if(value == null) {
-      throw new IllegalStateException(String.format("No long value found for key: {}", key));
-    } else {
-      return Long.valueOf(value);
-    }
+    String value =loadStringValue(key);
+    return Long.valueOf(value);
+  }
+
+  public Instant loadInstantValue(String key) {
+    Long value = loadLongValue(key);
+    return Instant.ofEpochSecond(value);
+  }
+
+  @Transient
+  public String getStringValue(String key) {
+    return mappings.get(key);
   }
 
   @Transient
@@ -33,6 +44,16 @@ public class JobMap implements ExecutionMap {
       return null;
     } else {
       return Long.valueOf(value);
+    }
+  }
+
+  @Transient
+  public Instant getInstantValue(String key) {
+    Long value = getLongValue(key);
+    if(value == null) {
+      return null;
+    } else {
+      return Instant.ofEpochSecond(value);
     }
   }
 
@@ -55,5 +76,11 @@ public class JobMap implements ExecutionMap {
     Assert.hasText(key, "value is not set");
     Assert.notNull(value, "value is not set");
     mappings.put(key, value.toString());
+  }
+
+  public void putInstantValue(String key, Instant value) {
+    Assert.hasText(key, "value is not set");
+    Assert.notNull(value, "value is not set");
+    putLongValue(key, value.getEpochSecond());
   }
 }
