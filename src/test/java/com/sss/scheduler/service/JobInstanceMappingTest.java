@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.HashMap;
 
+import static org.junit.Assert.fail;
+
 public class JobInstanceMappingTest {
 
   private static ObjectMapper MAPPER = new ObjectMapper();
@@ -41,5 +43,12 @@ public class JobInstanceMappingTest {
     Assert.assertEquals(deserializedJobMap.getStringValue("stringKey"), "stringValue");
     Assert.assertEquals(deserializedJobMap.getLongValue("longKey"), Long.valueOf(123));
     Assert.assertEquals(deserializedJobMap.getInstantValue("instantKey").getEpochSecond(), epochSecond);
+    Assert.assertEquals(deserializedJobMap.loadInstantValue("instantKey").getEpochSecond(), epochSecond);
+
+    try {
+      deserializedJobMap.loadInstantValue("does-not-exist");
+      fail();
+    } catch (Exception e) {
+    }
   }
 }
