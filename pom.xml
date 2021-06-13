@@ -5,13 +5,15 @@
 
     <groupId>com.smooth.systems.solutions.scheduler</groupId>
     <artifactId>scheduler-framework</artifactId>
-    <version>master-SNAPSHOT</version>
+    <version>${revision}</version>
+
     <name>scheduler-framework</name>
     <description>Simple scheduling framework</description>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+        <revision>master-SNAPSHOT</revision>
     </properties>
 
     <dependencies>

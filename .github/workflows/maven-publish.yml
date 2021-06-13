@@ -26,6 +26,12 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+    - name: Set revision variable if not master
+#      if: endsWith(github.ref, '/master')
+      run: |
+        echo "BUILD_ARGS=-Drevision=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        echo "${BUILD_ARGS}"
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
