@@ -30,7 +30,7 @@ jobs:
 #      if: endsWith(github.ref, '/master')
       run: |
         echo "BUILD_ARGS=-Drevision=${GITHUB_REF##*/}" >> $GITHUB_ENV
-        echo "${BUILD_ARGS}"
+        echo ${BUILD_ARGS}
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
