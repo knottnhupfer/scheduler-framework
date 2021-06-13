@@ -27,7 +27,7 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Set revision variable if not master
-      if: !endsWith(github.ref, '/master')
+      if: endsWith(github.ref, '/master') != true
       run: |
         echo "BUILD_ARGS=-Drevision=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
