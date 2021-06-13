@@ -33,7 +33,7 @@ jobs:
         echo ${BUILD_ARGS}
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn ${BUILD_ARGS} -B package --file pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
