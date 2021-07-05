@@ -8,14 +8,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
 public interface JobRepository extends JpaRepository<JobInstance, Long> {
 
   List<JobStatus> ASSIGNABLE_JOB_STATUS = Arrays.asList(JobStatus.ERRORNOUS_RETRIGGER, JobStatus.IN_PROGRESS, JobStatus.OPEN);
+
+  List<JobStatus> SUCCEEDED_JOB_STATUS = Arrays.asList(JobStatus.COMPLETED_SUCCESSFUL);
 
   @Query("SELECT j FROM jobs j WHERE j.jobName = :jobName ORDER BY j.creationDate DESC")
   List<JobInstance> findAllJobsByName(@Param("jobName") String jobName);
@@ -62,4 +66,14 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
                  "AND j.status IN :status ORDER BY j.creationDate ASC")
   List<JobInstance> findJobsByStates(
           @Param("status") List<JobStatus> status, @Param("fromDate") Instant from, @Param("toDate") Instant to, Pageable pageable);
+
+  @Transactional
+  default void deleteSuccessfullyTerminatedJobsOlderThen(Long cleanupThresholdMinutes) {
+    Instant threshold = Instant.now().minus(cleanupThresholdMinutes, ChronoUnit.MINUTES);
+    deleteJobsByIds(SUCCEEDED_JOB_STATUS, threshold);
+  }
+
+  @Modifying
+  @Query("DELETE FROM jobs j WHERE j.lastExecutionDate <= :cleanupThreshold AND j.status IN :status")
+  void deleteJobsByIds(@Param("status") List<JobStatus> status, @Param("cleanupThreshold") Instant cleanupThreshold);
 }

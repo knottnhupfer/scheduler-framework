@@ -25,4 +25,7 @@ public class SchedulerConfiguration {
   // interval between a node tries to assign jobs, fetching interval will be jobsAssigningInterval / 2
   private Long jobsAssigningInterval = 30_000L;
   private Long jobsExecutionInterval = 15_000L;
+
+  private Long jobsAgeCleanupInterval = 500_000L; // cleanup every 5 minutes
+  private Long jobsAgeCleanupMinutes = 43_200L; // default 30 days
 }

@@ -5,6 +5,9 @@ scheduler:
     jobs-execution-interval: 15000
     jobs-reservation-interval: 180
     jobs-assigning-interval: 15000
+    jobs-age-cleanup-interval: 500000 # cleanup every 5 minutes
+    jobs-age-cleanup-minutes: 5 # cleanup older then 5 minutes
+
     # global retry configuration
     retries: 3
     interval-seconds: 60
