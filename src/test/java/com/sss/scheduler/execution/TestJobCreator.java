@@ -1,8 +1,6 @@
-package com.sss.scheduler.utils;
+package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
-import com.sss.scheduler.execution.JobsAssignmentScheduler;
-import com.sss.scheduler.execution.JobsExecutionScheduler;
 import com.sss.scheduler.service.JobService;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +14,6 @@ public class TestJobCreator {
 
   @Resource
   private JobsExecutionScheduler jobsExecutionScheduler;
-
-  @Resource
-  private JobsAssignmentScheduler jobsAssignmentScheduler;
 
   public void createJobs(String... jobNames) {
     for(String jobName : jobNames) {

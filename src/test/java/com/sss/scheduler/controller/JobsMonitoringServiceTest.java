@@ -1,12 +1,11 @@
 package com.sss.scheduler.controller;
 
-import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.repository.JobRepository;
 import com.sss.scheduler.service.JobsMonitoringService;
 import com.sss.scheduler.tests.BusinessErrorJob;
 import com.sss.scheduler.tests.ErrornousJob;
 import com.sss.scheduler.tests.SuccessfulJob;
-import com.sss.scheduler.utils.TestJobCreator;
+import com.sss.scheduler.execution.TestJobCreator;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

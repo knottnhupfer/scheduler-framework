@@ -41,7 +41,9 @@ public class JobService {
     }
     job.setExecutions(0L);
     job.setExecuteBy(null);
-    job.setNextExecutionDate(Instant.now());
+    if(job.getNextExecutionDate() == null) {
+      job.setNextExecutionDate(Instant.now());
+    }
     jobRepository.save(job);
   }
 
@@ -58,5 +60,11 @@ public class JobService {
     Instant reservedUntil = now.plusSeconds(schedulerConfiguration.getJobsReservationInterval());
     jobRepository.assignJobsToHostname(lockManager.getDefaultLockName(), reservedUntil, jobIdsToAssign);
     log.debug("Assign jobs {} to executer {}", jobIdsToAssign, lockManager.getDefaultLockName());
+  }
+
+  @Transactional(value = Transactional.TxType.REQUIRED)
+  public void updateNextExecutionDate(String jobName, Long businessObjectId, Instant nextExecutionDate) {
+    log.info("Update nextExecutionDate for job:{}, businessObjectId:{}, nextExecutionDate:{}", jobName, businessObjectId, nextExecutionDate);
+    jobRepository.updateNextExecutionDate(jobName, businessObjectId, nextExecutionDate);
   }
 }

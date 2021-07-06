@@ -32,7 +32,7 @@ public class JobsExecutionScheduler {
   private ExecutionConfigurationProvider executionConfigurationProvider;
 
   @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-execution-interval}")
-  public void executeAssignedJobs() {
+  void executeAssignedJobs() {
     List<JobInstance> assignedJobs = jobRepository.findAssignedjobs(lockManager.getDefaultLockName());
     for(JobInstance job : assignedJobs) {
       log.debug("Execute job:{} with id:{}", job.getId(), job.getJobName());

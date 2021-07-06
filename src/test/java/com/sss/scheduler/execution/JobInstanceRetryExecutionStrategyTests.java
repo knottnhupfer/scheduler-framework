@@ -1,4 +1,4 @@
-package com.sss.scheduler.configuration;
+package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobStatus;

@@ -57,4 +57,10 @@
             <column name="execution_result_message" type="varchar(2048)" />
         </createTable>
     </changeSet>
+
+    <changeSet author="scheduler-framework" id="scheduler-framework.0.3">
+        <addColumn tableName="jobs">
+            <column name="business_object_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

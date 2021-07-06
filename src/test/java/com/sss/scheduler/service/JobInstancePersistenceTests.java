@@ -28,6 +28,7 @@ class JobInstancePersistenceTests {
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
     jobInstance.setPriority(10);
+    jobInstance.setBusinessObjectId(123L);
     jobInstance.setExecutions(0L);
 
     JobMap jobMap = new JobMap();
@@ -40,6 +41,7 @@ class JobInstancePersistenceTests {
     Assert.assertNotNull(fetchedJobInstance.getId());
     Assert.assertEquals(fetchedJobInstance.getStatus(), JobStatus.OPEN);
     Assert.assertEquals(fetchedJobInstance.getJobName(), jobName);
+    Assert.assertEquals(fetchedJobInstance.getBusinessObjectId().longValue(), 123L);
     Assert.assertEquals(fetchedJobInstance.getPriority().longValue(), 10L);
     Assert.assertEquals(fetchedJobInstance.getJobMap().getStringValue("jobName"), jobName);
     TestComparisonUtil.assertDateCloseToNow(fetchedJobInstance.getCreationDate());

@@ -76,4 +76,9 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
   @Modifying
   @Query("DELETE FROM jobs j WHERE j.lastExecutionDate <= :cleanupThreshold AND j.status IN :status")
   void deleteJobsByIds(@Param("status") List<JobStatus> status, @Param("cleanupThreshold") Instant cleanupThreshold);
+
+  @Modifying
+  @Query("UPDATE jobs j SET j.nextExecutionDate = :nextExecutionDate WHERE j.jobName <= :jobName AND j.businessObjectId = :businessObjectId")
+  void updateNextExecutionDate(@Param("jobName") String jobName, @Param("businessObjectId") Long businessObjectId,
+                               @Param("nextExecutionDate") Instant nextExecutionDate);
 }

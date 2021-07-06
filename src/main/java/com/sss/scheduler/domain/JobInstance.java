@@ -54,9 +54,14 @@ public class JobInstance {
   @Column(nullable = false)
   private JobStatus status;
 
+  @Column
   private Long executionDuration;
 
+  @Column
   private String executionResultMessage;
+
+  @Column
+  private Long businessObjectId;
 
   public String getShortDescription() {
     return String.format("Job(id:%d) '%s' with state:%s and next execution:%s", id, jobName, status, nextExecutionDate);
