@@ -19,6 +19,8 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
 
   List<JobStatus> ASSIGNABLE_JOB_STATUS = Arrays.asList(JobStatus.ERRORNOUS_RETRIGGER, JobStatus.IN_PROGRESS, JobStatus.OPEN);
 
+  List<JobStatus> RESTARTABLE_JOB_STATUS = Arrays.asList(JobStatus.OPEN, JobStatus.IN_PROGRESS, JobStatus.ERRORNOUS_RETRIGGER, JobStatus.BUSINESS_ERROR, JobStatus.COMPLETED_ERRONEOUS);
+
   List<JobStatus> SUCCEEDED_JOB_STATUS = Arrays.asList(JobStatus.COMPLETED_SUCCESSFUL);
 
   @Query("SELECT j FROM jobs j WHERE j.jobName = :jobName ORDER BY j.creationDate DESC")
@@ -81,4 +83,13 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
   @Query("UPDATE jobs j SET j.nextExecutionDate = :nextExecutionDate WHERE j.jobName <= :jobName AND j.businessObjectId = :businessObjectId")
   void updateNextExecutionDate(@Param("jobName") String jobName, @Param("businessObjectId") Long businessObjectId,
                                @Param("nextExecutionDate") Instant nextExecutionDate);
+
+  List<JobInstance> findByJobNameAndBusinessObjectId(String jobName, Long businessObjectId);
+
+  @Query("SELECT j FROM jobs j WHERE j.jobName <= :jobName AND j.status IN :pendingStatus ORDER BY j.creationDate ASC")
+  List<JobInstance> findJobsByJobNameAndStatus(@Param("jobName") String jobName, @Param("pendingStatus") List<JobStatus> openStatus);
+
+  default List<JobInstance> findRestartableJobsByJobName(String jobName) {
+    return findJobsByJobNameAndStatus(jobName, RESTARTABLE_JOB_STATUS);
+  }
 }

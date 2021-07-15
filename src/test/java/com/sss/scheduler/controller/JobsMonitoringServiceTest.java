@@ -1,7 +1,9 @@
 package com.sss.scheduler.controller;
 
+import com.sss.scheduler.model.JobShort;
+import com.sss.scheduler.model.JobStatus;
 import com.sss.scheduler.repository.JobRepository;
-import com.sss.scheduler.service.JobsMonitoringService;
+import com.sss.scheduler.service.controller.JobsMonitoringService;
 import com.sss.scheduler.tests.BusinessErrorJob;
 import com.sss.scheduler.tests.ErrornousJob;
 import com.sss.scheduler.tests.SuccessfulJob;

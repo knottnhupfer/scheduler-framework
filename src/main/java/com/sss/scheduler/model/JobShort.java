@@ -1,4 +1,4 @@
-package com.sss.scheduler.controller;
+package com.sss.scheduler.model;
 
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobStatus;

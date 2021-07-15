@@ -1,6 +1,9 @@
 package com.sss.scheduler.controller;
 
-import com.sss.scheduler.service.JobsMonitoringService;
+import com.sss.scheduler.model.JobShort;
+import com.sss.scheduler.model.JobStatus;
+import com.sss.scheduler.model.JobsReponse;
+import com.sss.scheduler.service.controller.JobsMonitoringService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +25,8 @@ public abstract class JobsMonitoringController {
 
   @GetMapping(value = "/api/jobs/{status}", produces = "application/json")
   public ResponseEntity<JobsReponse> getJobs(@PathVariable("status") JobStatus status,
-                 @RequestParam(value = "startDate", required = false) OffsetDateTime startDate,
-                 @RequestParam(value = "endDate", required = false) OffsetDateTime endDate) {
+                                             @RequestParam(value = "startDate", required = false) OffsetDateTime startDate,
+                                             @RequestParam(value = "endDate", required = false) OffsetDateTime endDate) {
     log.debug("Retrieve jobs for state:{} from:{} to:{}", status, startDate, endDate);
 
     Instant start = startDate != null ? startDate.toInstant() : Instant.now().minus(Duration.ofDays(1));
