@@ -31,7 +31,7 @@ public class JobsExecutionScheduler {
   @Resource
   private ExecutionConfigurationProvider executionConfigurationProvider;
 
-  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-execution-interval}")
+  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-execution-interval:60000}")
   void executeAssignedJobs() {
     List<JobInstance> assignedJobs = jobRepository.findAssignedjobs(lockManager.getDefaultLockName());
     for(JobInstance job : assignedJobs) {

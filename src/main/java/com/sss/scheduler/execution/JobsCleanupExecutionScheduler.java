@@ -22,7 +22,7 @@ public class JobsCleanupExecutionScheduler extends AbstractLockedScheduler {
     super(JobsCleanupExecutionScheduler.class.getName(), 15L);
   }
 
-  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-age-cleanup-interval}")
+  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-age-cleanup-interval:900000}")
   void executeCleanupSucceededJobs() {
     executeWithLock();
   }

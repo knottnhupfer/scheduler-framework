@@ -34,7 +34,7 @@ public class JobsAssignmentScheduler {
     applicationActive = schedulerConfiguration.isEnabled();
   }
 
-  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-assigning-interval}")
+  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-assigning-interval:15000}")
   void assignJobsToExecute() {
     if(!applicationActive) {
       return;

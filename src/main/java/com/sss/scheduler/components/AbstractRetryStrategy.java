@@ -11,4 +11,9 @@ public abstract class AbstractRetryStrategy implements RetryStrategy {
   public String getStrategyName() {
     return strategyName;
   }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
+  }
 }

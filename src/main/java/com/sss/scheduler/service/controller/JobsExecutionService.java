@@ -43,6 +43,10 @@ public class JobsExecutionService {
     jobInstances.stream().forEach(jobInstance -> {
       try {
         Job job = loadJobByName(jobInstance.getJobName());
+        if(jobInstance.getStatus().isFinal()) {
+          throw new IllegalArgumentException(String.format("Trying to execute JobInstance(id:%d) with final state:%s",
+                          jobInstance.getId(), jobInstance.getStatus().name()));
+        }
         executeJob(job, jobInstance);
       } catch (Exception e) {
         log.error("Error while processing jobInstance {}. Reason: {}", jobInstance, e.getMessage(), e);
