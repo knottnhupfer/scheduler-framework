@@ -1,7 +1,7 @@
 package com.sss.scheduler.service.controller;
 
 import com.sss.scheduler.model.JobShort;
-import com.sss.scheduler.model.JobStatus;
+import com.sss.scheduler.model.MonitoringJobState;
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.repository.JobRepository;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,8 @@ public class JobsMonitoringService {
   @Resource
   private JobRepository jobRepository;
 
-  public List<JobShort> getJobs(JobStatus status, Instant startDate, Instant endDate) {
-    List<JobInstance> jobs = jobRepository.findJobsByStates(JobStatus.convertStatus(status), startDate, endDate, DEFAULT_MAX_JOBS);
+  public List<JobShort> getJobs(MonitoringJobState status, Instant startDate, Instant endDate) {
+    List<JobInstance> jobs = jobRepository.findJobsByStates(MonitoringJobState.retrieveJobStates(status), startDate, endDate, DEFAULT_MAX_JOBS);
     return jobs.stream().map(JobShort::of).collect(Collectors.toList());
   }
 }

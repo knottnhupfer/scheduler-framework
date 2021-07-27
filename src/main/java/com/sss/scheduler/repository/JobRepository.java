@@ -80,13 +80,13 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
   void deleteJobsByIds(@Param("status") List<JobStatus> status, @Param("cleanupThreshold") Instant cleanupThreshold);
 
   @Modifying
-  @Query("UPDATE jobs j SET j.nextExecutionDate = :nextExecutionDate WHERE j.jobName <= :jobName AND j.businessObjectId = :businessObjectId")
+  @Query("UPDATE jobs j SET j.nextExecutionDate = :nextExecutionDate WHERE j.jobName = :jobName AND j.businessObjectId = :businessObjectId")
   void updateNextExecutionDate(@Param("jobName") String jobName, @Param("businessObjectId") Long businessObjectId,
                                @Param("nextExecutionDate") Instant nextExecutionDate);
 
   List<JobInstance> findByJobNameAndBusinessObjectId(String jobName, Long businessObjectId);
 
-  @Query("SELECT j FROM jobs j WHERE j.jobName <= :jobName AND j.status IN :pendingStatus ORDER BY j.creationDate ASC")
+  @Query("SELECT j FROM jobs j WHERE j.jobName = :jobName AND j.status IN :pendingStatus ORDER BY j.creationDate ASC")
   List<JobInstance> findJobsByJobNameAndStatus(@Param("jobName") String jobName, @Param("pendingStatus") List<JobStatus> openStatus);
 
   default List<JobInstance> findRestartableJobsByJobName(String jobName) {

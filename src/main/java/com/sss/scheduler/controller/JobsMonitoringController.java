@@ -1,7 +1,7 @@
 package com.sss.scheduler.controller;
 
 import com.sss.scheduler.model.JobShort;
-import com.sss.scheduler.model.JobStatus;
+import com.sss.scheduler.model.MonitoringJobState;
 import com.sss.scheduler.model.JobsReponse;
 import com.sss.scheduler.service.controller.JobsMonitoringService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public abstract class JobsMonitoringController {
   private JobsMonitoringService jobsMonitoringService;
 
   @GetMapping(value = "/api/jobs/{status}", produces = "application/json")
-  public ResponseEntity<JobsReponse> getJobs(@PathVariable("status") JobStatus status,
+  public ResponseEntity<JobsReponse> getJobs(@PathVariable("status") MonitoringJobState status,
                                              @RequestParam(value = "startDate", required = false) OffsetDateTime startDate,
                                              @RequestParam(value = "endDate", required = false) OffsetDateTime endDate) {
     log.debug("Retrieve jobs for state:{} from:{} to:{}", status, startDate, endDate);

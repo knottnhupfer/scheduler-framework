@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -66,5 +67,13 @@ public class JobService {
   public void updateNextExecutionDate(String jobName, Long businessObjectId, Instant nextExecutionDate) {
     log.info("Update nextExecutionDate for job:{}, businessObjectId:{}, nextExecutionDate:{}", jobName, businessObjectId, nextExecutionDate);
     jobRepository.updateNextExecutionDate(jobName, businessObjectId, nextExecutionDate);
+  }
+
+  public JobInstance loadJobInstance(Long jobInstanceId) {
+    Optional<JobInstance> jobInstance = jobRepository.findById(jobInstanceId);
+    if(jobInstance.isPresent()) {
+      return jobInstance.get();
+    }
+    throw new IllegalArgumentException(String.format("Unable to load JobInstance with id:%d", jobInstanceId));
   }
 }

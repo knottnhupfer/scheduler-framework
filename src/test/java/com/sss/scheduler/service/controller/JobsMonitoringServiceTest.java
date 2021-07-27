@@ -1,9 +1,8 @@
-package com.sss.scheduler.controller;
+package com.sss.scheduler.service.controller;
 
 import com.sss.scheduler.model.JobShort;
-import com.sss.scheduler.model.JobStatus;
+import com.sss.scheduler.model.MonitoringJobState;
 import com.sss.scheduler.repository.JobRepository;
-import com.sss.scheduler.service.controller.JobsMonitoringService;
 import com.sss.scheduler.tests.BusinessErrorJob;
 import com.sss.scheduler.tests.ErrornousJob;
 import com.sss.scheduler.tests.SuccessfulJob;
@@ -34,7 +33,7 @@ public class JobsMonitoringServiceTest {
     jobRepository.deleteAll();
     Instant startDate = Instant.now().minus(Duration.ofDays(1));
     Instant endDate = Instant.now().plus(Duration.ofDays(1));
-    List<JobShort> jobs = jobsMonitoringService.getJobs(JobStatus.failed, startDate, endDate);
+    List<JobShort> jobs = jobsMonitoringService.getJobs(MonitoringJobState.failed, startDate, endDate);
     Assert.assertEquals(0, jobs.size());
   }
 
@@ -44,9 +43,9 @@ public class JobsMonitoringServiceTest {
     testJobCreator.createJobsAndExecute(BusinessErrorJob.NAME, ErrornousJob.NAME, SuccessfulJob.NAME);
     Instant startDate = Instant.now().minus(Duration.ofDays(1));
     Instant endDate = Instant.now().plus(Duration.ofDays(1));
-    List<JobShort> jobs = jobsMonitoringService.getJobs(JobStatus.failed, startDate, endDate);
+    List<JobShort> jobs = jobsMonitoringService.getJobs(MonitoringJobState.failed, startDate, endDate);
     Assert.assertEquals(1, jobs.size());
-    jobs = jobsMonitoringService.getJobs(JobStatus.pending, startDate, endDate);
+    jobs = jobsMonitoringService.getJobs(MonitoringJobState.pending, startDate, endDate);
     Assert.assertEquals(1, jobs.size());
   }
 }

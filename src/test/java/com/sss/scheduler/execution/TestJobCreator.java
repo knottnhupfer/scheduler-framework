@@ -1,6 +1,7 @@
 package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
+import com.sss.scheduler.domain.JobMap;
 import com.sss.scheduler.service.JobService;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,9 @@ import javax.annotation.Resource;
 
 @Component
 public class TestJobCreator {
+
+  public static final String PARAM_KEY_BUSINESS_OBJECT_ID = "BUSINESS_OBJECT_ID";
+  public static final Long DEFAULT_BUSINESS_OBJECT_ID = 3L;
 
   @Resource
   private JobService jobService;
@@ -22,8 +26,13 @@ public class TestJobCreator {
   }
 
   public void createJob(String jobName) {
+    JobMap jobMap = new JobMap();
+    jobMap.putLongValue(PARAM_KEY_BUSINESS_OBJECT_ID, DEFAULT_BUSINESS_OBJECT_ID);
+
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
+    jobInstance.setBusinessObjectId(DEFAULT_BUSINESS_OBJECT_ID);
+    jobInstance.setJobMap(jobMap);
     jobService.createJob(jobInstance);
   }
 
