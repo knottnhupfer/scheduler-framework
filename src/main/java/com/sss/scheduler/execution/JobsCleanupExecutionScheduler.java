@@ -22,7 +22,7 @@ public class JobsCleanupExecutionScheduler extends AbstractLockedScheduler {
     super(JobsCleanupExecutionScheduler.class.getName(), 15L);
   }
 
-  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-age-cleanup-interval:900000}")
+  @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-age-cleanup-interval:1800000}")
   void executeCleanupSucceededJobs() {
     executeWithLock();
   }
@@ -30,6 +30,6 @@ public class JobsCleanupExecutionScheduler extends AbstractLockedScheduler {
   @Override
   protected void execute0() {
     jobRepository.deleteSuccessfullyTerminatedJobsOlderThen(schedulerConfiguration.getJobsAgeCleanupMinutes());
-    log.info("Successfully executed cleanup succeeded jobs scheduler.");
+    log.debug("Successfully executed cleanup succeeded jobs scheduler.");
   }
 }

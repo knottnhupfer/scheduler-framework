@@ -26,6 +26,6 @@ public class SchedulerConfiguration {
   private Long jobsAssigningInterval = 15_000L;
   private Long jobsExecutionInterval = 30_000L;
 
-  private Long jobsAgeCleanupInterval = 500_000L; // cleanup every 5 minutes
+  private Long jobsAgeCleanupInterval = 1_800_000L; // cleanup every 30 minutes
   private Long jobsAgeCleanupMinutes = 43_200L; // default 30 days
 }
