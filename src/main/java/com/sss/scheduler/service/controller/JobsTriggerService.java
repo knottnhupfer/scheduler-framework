@@ -45,6 +45,7 @@ public class JobsTriggerService {
         jobsExecutor.executeJob(jobInstance.getId());
       } catch (Exception e) {
         log.error("Error while processing jobInstance {}. Reason: {}", jobInstance, e.getMessage(), e);
+        throw new IllegalArgumentException(String.format("Error while processing jobInstance %s. Reason: %s", jobInstance, e.getMessage()));
       }
     });
   }
