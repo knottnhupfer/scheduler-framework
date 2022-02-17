@@ -41,7 +41,7 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
                             @Param("jobsToAssign") List<Long> jobsToAssign);
 
   default List<Long> findJobsToAssign(String executeBy, int maxJobs) {
-    List<Long> alreadyAssignedJobs = findJobsToAssign(executeBy);
+    List<Long> alreadyAssignedJobs = findAlreadyAssignedJobs(executeBy);
     if(alreadyAssignedJobs.size() >= maxJobs) {
       return alreadyAssignedJobs;
     }
@@ -55,7 +55,7 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
           @Param("now") Instant now, @Param("openStatus") List<JobStatus> openStatus, Pageable pageable);
 
   @Query("SELECT c.id FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.creationDate ASC")
-  List<Long> findJobsToAssign(@Param("executedBy") String executedBy);
+  List<Long> findAlreadyAssignedJobs(@Param("executedBy") String executedBy);
 
   @Query("SELECT c FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.priority ASC, c.creationDate ASC")
   List<JobInstance> findAssignedjobs(@Param("executedBy") String executedBy);
