@@ -8,10 +8,11 @@ import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -33,29 +34,29 @@ public class JobService {
 
   public void createJob(JobInstance job) {
     Assert.hasText(job.getJobName(), "job name not set");
-    if(job.getJobMap() == null) {
+    if (job.getJobMap() == null) {
       job.setJobMap(new JobMap());
     }
     job.setStatus(JobStatus.OPEN);
-    if(job.getPriority() == null || job.getPriority() > MAX_PRIORITY_AND_DEFAULT) {
+    if (job.getPriority() == null || job.getPriority() > MAX_PRIORITY_AND_DEFAULT) {
       job.setPriority(MAX_PRIORITY_AND_DEFAULT);
     }
     job.setExecutions(0L);
     job.setExecuteBy(null);
-    if(job.getNextExecutionDate() == null) {
+    if (job.getNextExecutionDate() == null) {
       job.setNextExecutionDate(Instant.now());
     }
     jobRepository.save(job);
   }
 
-  @Transactional(value = Transactional.TxType.REQUIRES_NEW)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void retrieveAndAssignJobs() {
     log.debug("Retrieve jobs to execute.");
     Instant now = Instant.now();
     jobRepository.cleanupAssignedOutdatedJobs(now);
 
     List<Long> jobIdsToAssign = jobRepository.findJobsToAssign(lockManager.getDefaultLockName(), schedulerConfiguration.getMaxJobsPerNode());
-    if(jobIdsToAssign.isEmpty()) {
+    if (jobIdsToAssign.isEmpty()) {
       return;
     }
     Instant reservedUntil = now.plusSeconds(schedulerConfiguration.getJobsReservationInterval());
@@ -63,7 +64,7 @@ public class JobService {
     log.debug("Assign jobs {} to executer {}", jobIdsToAssign, lockManager.getDefaultLockName());
   }
 
-  @Transactional(value = Transactional.TxType.REQUIRED)
+  @Transactional(propagation = Propagation.REQUIRED)
   public void updateNextExecutionDate(String jobName, Long businessObjectId, Instant nextExecutionDate) {
     log.info("Update nextExecutionDate for job:{}, businessObjectId:{}, nextExecutionDate:{}", jobName, businessObjectId, nextExecutionDate);
     jobRepository.updateNextExecutionDate(jobName, businessObjectId, nextExecutionDate);
@@ -71,7 +72,7 @@ public class JobService {
 
   public JobInstance loadJobInstance(Long jobInstanceId) {
     Optional<JobInstance> jobInstance = jobRepository.findById(jobInstanceId);
-    if(jobInstance.isPresent()) {
+    if (jobInstance.isPresent()) {
       return jobInstance.get();
     }
     throw new IllegalArgumentException(String.format("Unable to load JobInstance with id:%d", jobInstanceId));
