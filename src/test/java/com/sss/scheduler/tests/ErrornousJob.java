@@ -11,6 +11,10 @@ public class ErrornousJob implements Job {
 
   @Override
   public void execute(ExecutionMap map) {
-    throw new IllegalStateException("Execute failing job.");
+    StringBuffer buffer = new StringBuffer();
+    for(int i = 0; i < 120; i++) {
+      buffer.append("Execute failing job. -> ");
+    }
+    throw new IllegalStateException(buffer.toString());
   }
 }

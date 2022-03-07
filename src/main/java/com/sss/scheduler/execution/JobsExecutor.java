@@ -10,9 +10,11 @@ import com.sss.scheduler.domain.JobStatus;
 import com.sss.scheduler.service.JobService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.time.Instant;
@@ -21,6 +23,9 @@ import java.util.Map;
 @Slf4j
 @Component
 public class JobsExecutor {
+
+  @Value("${scheduler.job-execution.max-execution-message-length:2048}")
+  private Integer maxExecutionMessageLength;
 
   @Autowired(required = false)
   private Map<String, Job> jobs;
@@ -46,7 +51,7 @@ public class JobsExecutor {
     } catch (BusinessException e) {
       log.error("BUSINESS_ERROR while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
       log.trace("Exception stacktrace is:\n", e);
-      job.setExecutionResultMessage(e.getMessage());
+      job.setExecutionResultMessage(trimExecutionMessageIfRequired(e.getMessage()));
       job.setStatus(JobStatus.BUSINESS_ERROR);
       job.setNextExecutionDate(null);
       job.setExecutions(job.getExecutions() + 1);
@@ -83,7 +88,7 @@ public class JobsExecutor {
     job.setNextExecutionDate(nextExecution);
     job.setExecutions(job.getExecutions() + 1);
     job.setStatus(JobStatus.ERRORNOUS_RETRIGGER);
-    job.setExecutionResultMessage(e.getMessage());
+    job.setExecutionResultMessage(trimExecutionMessageIfRequired(e.getMessage()));
   }
 
   private Job loadJob(String jobName) {
@@ -92,5 +97,12 @@ public class JobsExecutor {
       throw new RuntimeException(String.format("Unable to load job with name '%s'.", jobName));
     }
     return job;
+  }
+
+  private String trimExecutionMessageIfRequired(String msg) {
+    if(ObjectUtils.isEmpty(msg) || msg.length() < (maxExecutionMessageLength - 2)) {
+      return msg;
+    }
+    return msg.substring(0, maxExecutionMessageLength - 6) + " ...";
   }
 }
