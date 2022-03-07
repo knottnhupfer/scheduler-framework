@@ -46,7 +46,7 @@ public class JobsExecutorTests {
       jobsExecutor.executeJob("failingJob", new JobMap());
       fail();
     } catch (Exception e) {
-      Assert.assertEquals("Execute failing job.", e.getMessage());
+      Assert.assertTrue("validate correct exception", e.getMessage().contains("Execute failing job."));
     }
   }
 
