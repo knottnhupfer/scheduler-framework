@@ -41,7 +41,7 @@ public class JobsExecutor {
     JobInstance job = jobService.loadJobInstance(jobInstanceId);
     long startTime = System.currentTimeMillis();
     try {
-      executeJob(job.getJobName(), job.getJobMap());
+      executeJob(job.getJobName(), job.getBusinessObjectId(), job.getJobMap());
 
       job.setNextExecutionDate(null);
       job.setStatus(JobStatus.COMPLETED_SUCCESSFUL);
@@ -77,9 +77,9 @@ public class JobsExecutor {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void executeJob(String jobName, ExecutionMap map) {
+  public void executeJob(String jobName, Long businessObjectId, ExecutionMap map) {
     Job job = loadJob(jobName);
-    job.execute(map);
+    job.execute(businessObjectId, map);
   }
 
   private void updateExecutionParametersAfterError(JobInstance job, ExecutionConfiguration executionConfiguration, Exception e) {

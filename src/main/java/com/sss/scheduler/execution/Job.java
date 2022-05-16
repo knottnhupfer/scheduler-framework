@@ -8,5 +8,11 @@ public interface Job {
     return this.getClass().getSimpleName().substring(0, 1).toLowerCase() + this.getClass().getSimpleName().substring(1);
   }
 
-  void execute(ExecutionMap map);
+  default void execute(ExecutionMap map) {
+    throw new IllegalStateException("'execute(ExecutionMap map)' not implemented yet!");
+  }
+
+  default void execute(Long businessObjectId, ExecutionMap map) {
+    execute(map);
+  }
 }

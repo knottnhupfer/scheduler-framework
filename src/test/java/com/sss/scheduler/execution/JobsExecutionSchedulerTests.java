@@ -7,6 +7,7 @@ import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
 import com.sss.scheduler.service.JobService;
 import com.sss.scheduler.tests.IncreaseByOneJob;
+import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdJob;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,18 +78,35 @@ public class JobsExecutionSchedulerTests {
     Assert.assertEquals("Business error happened.", job.getExecutionResultMessage());
   }
 
-  private String createNewJob(String jobName, String counterName) {
-    return createNewJob(jobName, counterName, 1).get(0);
+  @Test
+  public void executeSingleCommandWithBusinessObjectId() {
+    createNewJob("increaseByOneWithBusinessObjectIdJob", "testBusinessObjectId", 1, 23L);
+
+    JobInstance job = jobRepository.findAllJobsByName("increaseByOneWithBusinessObjectIdJob").get(0);
+    job.setExecuteBy(lockManager.getDefaultLockName());
+    job.setExecutions(0L);
+    jobRepository.save(job);
+
+    jobsExecutionScheduler.executeAssignedJobs();
+
+    Long passedBusinessObjectId = IncreaseByOneWithBusinessObjectIdJob.getBusinessObjectId("testBusinessObjectId");
+    Assert.assertEquals(23L, passedBusinessObjectId.longValue());
   }
 
-  private List<String> createNewJob(String jobName, String counterName, int jobsAmounts) {
+  private String createNewJob(String jobName, String counterName) {
+    return createNewJob(jobName, counterName, 1, 1L).get(0);
+  }
+
+  private List<String> createNewJob(String jobName, String counterName, int jobsAmounts, Long businessObjectId) {
     List<String> jobNames = new ArrayList<>();
     for(int i = 0; i < jobsAmounts; i++) {
       JobInstance jobInstance = new JobInstance();
       jobInstance.setJobName(jobName);
+      jobInstance.setBusinessObjectId(businessObjectId);
 
       JobMap jobMap = new JobMap();
       jobMap.putValue(IncreaseByOneJob.COUNTER_NAME, counterName);
+      jobMap.putValue(IncreaseByOneWithBusinessObjectIdJob.BUSINESS_OBJECT_ID_NAME, counterName);
       jobInstance.setJobMap(jobMap);
       jobService.createJob(jobInstance);
       jobNames.add(jobName);
