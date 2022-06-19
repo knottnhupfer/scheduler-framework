@@ -1,7 +1,6 @@
 package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
-import com.sss.scheduler.domain.JobMap;
 import com.sss.scheduler.domain.JobStatus;
 import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
@@ -13,17 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
-public class JobsExecutionSchedulerTests {
-
-  @Resource
-  private JobService jobService;
-
-  @Resource
-  private LockManager lockManager;
+public class JobsExecutionSchedulerTests extends AbstractJobsExecutionTest {
 
   @Resource
   private JobRepository jobRepository;
@@ -91,27 +82,6 @@ public class JobsExecutionSchedulerTests {
 
     Long passedBusinessObjectId = IncreaseByOneWithBusinessObjectIdJob.getBusinessObjectId("testBusinessObjectId");
     Assert.assertEquals(23L, passedBusinessObjectId.longValue());
-  }
-
-  private String createNewJob(String jobName, String counterName) {
-    return createNewJob(jobName, counterName, 1, 1L).get(0);
-  }
-
-  private List<String> createNewJob(String jobName, String counterName, int jobsAmounts, Long businessObjectId) {
-    List<String> jobNames = new ArrayList<>();
-    for(int i = 0; i < jobsAmounts; i++) {
-      JobInstance jobInstance = new JobInstance();
-      jobInstance.setJobName(jobName);
-      jobInstance.setBusinessObjectId(businessObjectId);
-
-      JobMap jobMap = new JobMap();
-      jobMap.putValue(IncreaseByOneJob.COUNTER_NAME, counterName);
-      jobMap.putValue(IncreaseByOneWithBusinessObjectIdJob.BUSINESS_OBJECT_ID_NAME, counterName);
-      jobInstance.setJobMap(jobMap);
-      jobService.createJob(jobInstance);
-      jobNames.add(jobName);
-    }
-    return jobNames;
   }
 
   private void assignCreatedJob(String jobName) {

@@ -76,7 +76,7 @@ public class JobsExecutor {
     job.setLastExecutionDate(Instant.ofEpochMilli(startTime));
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = BusinessException.class)
   public void executeJob(String jobName, Long businessObjectId, ExecutionMap map) {
     Job job = loadJob(jobName);
     job.execute(businessObjectId, map);

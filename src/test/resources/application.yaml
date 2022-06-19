@@ -32,8 +32,8 @@ spring:
     show-sql: false
     open-in-view: false
     hibernate:
-#      ddl-auto: update
-      ddl-auto: validate
+      ddl-auto: update
+#      ddl-auto: validate
   liquibase:
     change-log: "classpath:changelog/scheduler-framework/master.xml"
   h2:
