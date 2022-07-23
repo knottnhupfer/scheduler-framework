@@ -7,6 +7,7 @@ public enum JobStatus {
   BUSINESS_ERROR(true),
   COMPLETED_SUCCESSFUL(true),
   COMPLETED_ERRONEOUS(true),
+  COMPLETED_SOLVED_EXTERNALLY(true),
   CANCELLED(true);
 
   private boolean finalStatus;

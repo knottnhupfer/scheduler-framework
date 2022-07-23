@@ -26,12 +26,16 @@ public class TestJobCreator {
   }
 
   public void createJob(String jobName) {
+    createJob(jobName, DEFAULT_BUSINESS_OBJECT_ID);
+  }
+
+  public void createJob(String jobName, Long businessObjectId) {
     JobMap jobMap = new JobMap();
     jobMap.putLongValue(PARAM_KEY_BUSINESS_OBJECT_ID, DEFAULT_BUSINESS_OBJECT_ID);
 
     JobInstance jobInstance = new JobInstance();
     jobInstance.setJobName(jobName);
-    jobInstance.setBusinessObjectId(DEFAULT_BUSINESS_OBJECT_ID);
+    jobInstance.setBusinessObjectId(businessObjectId);
     jobInstance.setJobMap(jobMap);
     jobService.createJob(jobInstance);
   }

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public interface JobRepository extends JpaRepository<JobInstance, Long> {
@@ -86,8 +87,8 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
 
   List<JobInstance> findByJobNameAndBusinessObjectId(String jobName, Long businessObjectId);
 
-  @Query("SELECT j FROM jobs j WHERE j.jobName = :jobName AND j.status IN :pendingStatus ORDER BY j.creationDate ASC")
-  List<JobInstance> findJobsByJobNameAndStatus(@Param("jobName") String jobName, @Param("pendingStatus") List<JobStatus> openStatus);
+  @Query("SELECT j FROM jobs j WHERE j.jobName = :jobName AND j.status IN :status ORDER BY j.creationDate ASC")
+  List<JobInstance> findJobsByJobNameAndStatus(@Param("jobName") String jobName, @Param("status") Collection<JobStatus> status);
 
   default List<JobInstance> findRestartableJobsByJobName(String jobName) {
     return findJobsByJobNameAndStatus(jobName, RESTARTABLE_JOB_STATUS);
