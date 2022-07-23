@@ -71,6 +71,6 @@ class JobInstancePersistenceTests {
     jobService.createJob(jobInstance);
 
     JobInstance fetchedJobInstance = jobTestService.getJobByName(jobName);
-    Assert.assertEquals(fetchedJobInstance.getPriority().longValue(), 100L);
+    Assert.assertEquals(fetchedJobInstance.getPriority().longValue(), 1207L);
   }
 }

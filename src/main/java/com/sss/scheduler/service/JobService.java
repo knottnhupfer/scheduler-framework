@@ -1,5 +1,6 @@
 package com.sss.scheduler.service;
 
+import com.sss.scheduler.JobConstants;
 import com.sss.scheduler.config.SchedulerConfiguration;
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobMap;
@@ -21,8 +22,6 @@ import java.util.Optional;
 @Service
 public class JobService {
 
-  private static final int MAX_PRIORITY_AND_DEFAULT = 100;
-
   @Resource
   private LockManager lockManager;
 
@@ -38,8 +37,8 @@ public class JobService {
       job.setJobMap(new JobMap());
     }
     job.setStatus(JobStatus.OPEN);
-    if (job.getPriority() == null || job.getPriority() > MAX_PRIORITY_AND_DEFAULT) {
-      job.setPriority(MAX_PRIORITY_AND_DEFAULT);
+    if (job.getPriority() == null) {
+      job.setPriority(JobConstants.JOB_PRIORITY_DEFAULT);
     }
     job.setExecutions(0L);
     job.setExecuteBy(null);
