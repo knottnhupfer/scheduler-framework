@@ -2,16 +2,18 @@ package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobStatus;
-import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
-import com.sss.scheduler.service.JobService;
 import com.sss.scheduler.tests.IncreaseByOneJob;
+import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdAndExecutionsJob;
 import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdJob;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.time.Instant;
+import java.util.UUID;
 
 @SpringBootTest
 public class JobsExecutionSchedulerTests extends AbstractJobsExecutionTest {
@@ -82,6 +84,30 @@ public class JobsExecutionSchedulerTests extends AbstractJobsExecutionTest {
 
     Long passedBusinessObjectId = IncreaseByOneWithBusinessObjectIdJob.getBusinessObjectId("testBusinessObjectId");
     Assert.assertEquals(23L, passedBusinessObjectId.longValue());
+  }
+
+  @Test
+  public void executeSingleCommandWithBusinessObjectIdAmdExecutions() {
+    String jobExecutionsName =  "job-id-" + UUID.randomUUID();
+    createNewJob("increaseByOneWithBusinessObjectIdAndExecutionsJob", jobExecutionsName, 1, 23L);
+
+    JobInstance job = jobRepository.findAllJobsByName("increaseByOneWithBusinessObjectIdAndExecutionsJob").get(0);
+    job.setExecuteBy(lockManager.getDefaultLockName());
+    jobRepository.save(job);
+    Long jobId = job.getId();
+
+    jobsExecutionScheduler.executeAssignedJobs();
+
+    Long passedBusinessObjectId = IncreaseByOneWithBusinessObjectIdAndExecutionsJob.getJobExecutions(jobExecutionsName);
+    Assertions.assertEquals(0L, passedBusinessObjectId.longValue());
+
+    job = jobRepository.findById(jobId).get();
+    job.setExecuteBy(lockManager.getDefaultLockName());
+    jobRepository.save(job);
+
+    jobsExecutionScheduler.executeAssignedJobs();
+    passedBusinessObjectId = IncreaseByOneWithBusinessObjectIdAndExecutionsJob.getJobExecutions(jobExecutionsName);
+    Assertions.assertEquals(1L, passedBusinessObjectId.longValue());
   }
 
   private void assignCreatedJob(String jobName) {

@@ -24,7 +24,7 @@ public class JobsExecutorTests {
   @Test
   public void noJobFound() {
     try {
-      jobsExecutor.executeJob("not-valid", 1L, new JobMap());
+      jobsExecutor.executeJob("not-valid", 1L, 1L, new JobMap());
       fail();
     } catch (Exception e) {
       Assert.assertEquals("Unable to load job with name 'not-valid'.", e.getMessage());
@@ -34,7 +34,7 @@ public class JobsExecutorTests {
   @Test
   public void executeSuccessfulJob() {
     try {
-      jobsExecutor.executeJob("successfulJob", 1L, new JobMap());
+      jobsExecutor.executeJob("successfulJob", 1L, 1L, new JobMap());
     } catch (Exception e) {
       fail();
     }
@@ -43,7 +43,7 @@ public class JobsExecutorTests {
   @Test
   public void executeFailingJob() {
     try {
-      jobsExecutor.executeJob("failingJob", 1L, new JobMap());
+      jobsExecutor.executeJob("failingJob", 1L, 1L, new JobMap());
       fail();
     } catch (Exception e) {
       Assert.assertTrue("validate correct exception", e.getMessage().contains("Execute failing job."));
@@ -56,7 +56,7 @@ public class JobsExecutorTests {
     jobsExecutionScheduler.executeAssignedJobs();
 
     try {
-      jobsExecutor.executeJob("businessErrorJob", 1L, new JobMap());
+      jobsExecutor.executeJob("businessErrorJob", 1L, 1L, new JobMap());
       fail();
     } catch (Exception e) {
       Assert.assertEquals("Business error happened.", e.getMessage());

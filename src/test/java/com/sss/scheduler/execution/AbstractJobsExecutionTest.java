@@ -6,6 +6,7 @@ import com.sss.scheduler.lock.LockManager;
 import com.sss.scheduler.repository.JobRepository;
 import com.sss.scheduler.service.JobService;
 import com.sss.scheduler.tests.IncreaseByOneJob;
+import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdAndExecutionsJob;
 import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdJob;
 
 import javax.annotation.Resource;
@@ -40,6 +41,7 @@ public class AbstractJobsExecutionTest {
       JobMap jobMap = new JobMap();
       jobMap.putValue(IncreaseByOneJob.COUNTER_NAME, counterName);
       jobMap.putValue(IncreaseByOneWithBusinessObjectIdJob.BUSINESS_OBJECT_ID_NAME, counterName);
+      jobMap.putValue(IncreaseByOneWithBusinessObjectIdAndExecutionsJob.JOB_EXECUTIONS_NAME, counterName);
       jobInstance.setJobMap(jobMap);
       jobService.createJob(jobInstance);
       jobNames.add(jobName);
