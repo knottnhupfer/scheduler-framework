@@ -12,11 +12,14 @@ public interface Job {
     throw new IllegalStateException("'execute(ExecutionMap map)' not implemented yet!");
   }
 
+  default void execute(Long businessObjectId, ExecutionMap map) {
+    execute(map);
+  }
+
   default void execute(Long businessObjectId, Long previousExecutions, ExecutionMap map) {
     execute(businessObjectId, map);
   }
 
-  default void execute(Long businessObjectId, ExecutionMap map) {
-    execute(map);
+  default void executeJobFailed(Long businessObjectId, ExecutionMap map, JobFailedStatus failedStatus) {
   }
 }

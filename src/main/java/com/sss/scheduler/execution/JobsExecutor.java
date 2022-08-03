@@ -55,6 +55,7 @@ public class JobsExecutor {
       job.setStatus(JobStatus.BUSINESS_ERROR);
       job.setNextExecutionDate(null);
       job.setExecutions(job.getExecutions() + 1);
+      executeJobFailed(job.getJobName(), job.getBusinessObjectId(), job.getJobMap(), JobFailedStatus.FAILED_PERMANENTLY_BUSINESS_ERROR);
     } catch (Exception e) {
       log.error("Error while processing job:{} with id:{}. Reason: {}",job.getJobName(), job.getId(), e.getMessage());
       log.trace("Exception stacktrace is:\n", e);
@@ -67,6 +68,7 @@ public class JobsExecutor {
         job.setStatus(JobStatus.COMPLETED_ERRONEOUS);
         job.setNextExecutionDate(null);
         log.warn("Completed errornous {} after {}/{} retries.", job.getShortDescription(), job.getExecutions(), executionConfiguration.getRetries());
+        executeJobFailed(job.getJobName(), job.getBusinessObjectId(), job.getJobMap(), JobFailedStatus.FAILED_PERMANENTLY_AFTER_RETRIES);
       }
     }
 
@@ -80,6 +82,16 @@ public class JobsExecutor {
   public void executeJob(String jobName, Long businessObjectId, Long previousExecutions, ExecutionMap map) {
     Job job = loadJob(jobName);
     job.execute(businessObjectId, previousExecutions, map);
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void executeJobFailed(String jobName, Long businessObjectId, ExecutionMap map, JobFailedStatus status) {
+    try {
+      Job job = loadJob(jobName);
+      job.executeJobFailed(businessObjectId, map, status);
+    } catch (Exception e) {
+      log.error("Error while execute job failed, no further calls executed. Reason: {}", e.getMessage(), e);
+    }
   }
 
   private void updateExecutionParametersAfterError(JobInstance job, ExecutionConfiguration executionConfiguration, Exception e) {

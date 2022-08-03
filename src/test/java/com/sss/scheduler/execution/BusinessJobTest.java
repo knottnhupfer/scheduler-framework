@@ -1,7 +1,6 @@
 package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobInstance;
-import com.sss.scheduler.tests.BusinessErrorJob;
 import com.sss.scheduler.tests.BusinessErrorWithPersistenceJob;
 import com.sss.scheduler.tests.domain.SimpleDbObject;
 import com.sss.scheduler.tests.domain.SimpleDbObjectRepository;
