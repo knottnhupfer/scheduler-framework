@@ -1,5 +1,6 @@
 package com.sss.scheduler.execution;
 
+import com.sss.scheduler.JobConstants;
 import com.sss.scheduler.components.ExecutionConfiguration;
 import com.sss.scheduler.components.ExecutionConfigurationProvider;
 import com.sss.scheduler.components.RetryStrategy;
@@ -41,7 +42,8 @@ public class JobsExecutor {
     JobInstance job = jobService.loadJobInstance(jobInstanceId);
     long startTime = System.currentTimeMillis();
     try {
-      executeJob(job.getJobName(), job.getBusinessObjectId(), job.getExecutions(), job.getJobMap());
+      job.getJobMap().putLongValue(JobConstants.MAP_KEY_JOB_EXECUTIONS, job.getExecutions());
+      executeJob(job.getJobName(), job.getBusinessObjectId(), job.getJobMap());
 
       job.setNextExecutionDate(null);
       job.setStatus(JobStatus.COMPLETED_SUCCESSFUL);
@@ -79,9 +81,9 @@ public class JobsExecutor {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = BusinessException.class)
-  public void executeJob(String jobName, Long businessObjectId, Long previousExecutions, ExecutionMap map) {
+  public void executeJob(String jobName, Long businessObjectId, ExecutionMap map) {
     Job job = loadJob(jobName);
-    job.execute(businessObjectId, previousExecutions, map);
+    job.execute(businessObjectId, map);
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)

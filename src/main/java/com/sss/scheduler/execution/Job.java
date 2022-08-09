@@ -15,11 +15,7 @@ public interface Job {
   default void execute(Long businessObjectId, ExecutionMap map) {
     execute(map);
   }
-
-  default void execute(Long businessObjectId, Long previousExecutions, ExecutionMap map) {
-    execute(businessObjectId, map);
-  }
-
   default void executeJobFailed(Long businessObjectId, ExecutionMap map, JobFailedStatus failedStatus) {
+    // no default handling
   }
 }

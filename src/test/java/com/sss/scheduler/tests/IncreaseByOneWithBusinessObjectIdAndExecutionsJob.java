@@ -1,5 +1,6 @@
 package com.sss.scheduler.tests;
 
+import com.sss.scheduler.JobConstants;
 import com.sss.scheduler.domain.ExecutionMap;
 import com.sss.scheduler.execution.Job;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,9 @@ public class IncreaseByOneWithBusinessObjectIdAndExecutionsJob implements Job {
   private static Map<String, Long> countersMap = new HashMap<>();
 
   @Override
-  public void execute(Long businessObjectId, Long previousExecutions, ExecutionMap map) {
+  public void execute(Long businessObjectId, ExecutionMap map) {
     String businessObjectIdName = map.loadStringValue(JOB_EXECUTIONS_NAME);
+    Long previousExecutions = map.getLongValue(JobConstants.MAP_KEY_JOB_EXECUTIONS);
     countersMap.put(businessObjectIdName, previousExecutions);
   }
 
