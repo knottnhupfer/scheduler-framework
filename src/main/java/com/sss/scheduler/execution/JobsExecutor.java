@@ -87,7 +87,7 @@ public class JobsExecutor {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void executeJobFailed(String jobName, Long businessObjectId, ExecutionMap map, JobFailedStatus status) {
+  public void executeJobFailed(String jobName, Long businessObjectId, ExecutionMap map, JobFailedStatus status) throws Exception {
     try {
       Job job = loadJob(jobName);
       job.executeJobFailed(businessObjectId, map, status);
