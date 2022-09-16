@@ -9,6 +9,7 @@ import com.sss.scheduler.domain.ExecutionMap;
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobStatus;
 import com.sss.scheduler.service.JobService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JobsExecutor {
 
   @Value("${scheduler.job-execution.max-execution-message-length:2048}")
@@ -31,11 +33,9 @@ public class JobsExecutor {
   @Autowired(required = false)
   private Map<String, Job> jobs;
 
-  @Resource
-  private JobService jobService;
+  private final JobService jobService;
 
-  @Resource
-  private ExecutionConfigurationProvider executionConfigurationProvider;
+  private final ExecutionConfigurationProvider executionConfigurationProvider;
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void executeJob(Long jobInstanceId) {
@@ -80,8 +80,8 @@ public class JobsExecutor {
     job.setLastExecutionDate(Instant.ofEpochMilli(startTime));
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = BusinessException.class)
-  public void executeJob(String jobName, Long businessObjectId, ExecutionMap map) {
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void executeJob(String jobName, Long businessObjectId, ExecutionMap map) throws Exception {
     Job job = loadJob(jobName);
     job.execute(businessObjectId, map);
   }
