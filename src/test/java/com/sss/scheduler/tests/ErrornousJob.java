@@ -3,8 +3,10 @@ package com.sss.scheduler.tests;
 import com.sss.scheduler.domain.ExecutionMap;
 import com.sss.scheduler.execution.Job;
 import com.sss.scheduler.execution.JobFailedStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component(ErrornousJob.NAME)
 public class ErrornousJob implements Job {
 
@@ -20,6 +22,6 @@ public class ErrornousJob implements Job {
   }
 
   public void executeJobFailed(Long businessObjectId, ExecutionMap map, JobFailedStatus failedStatus) {
-    System.out.println(String.format("Job failed with businessObjectId:%d and status: %s", businessObjectId, failedStatus));
+    log.info("Job failed with businessObjectId:{} and status: {}", businessObjectId, failedStatus);
   }
 }

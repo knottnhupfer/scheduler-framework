@@ -6,10 +6,12 @@ import com.sss.scheduler.execution.Job;
 import com.sss.scheduler.execution.JobFailedStatus;
 import com.sss.scheduler.tests.domain.SimpleDbObject;
 import com.sss.scheduler.tests.domain.SimpleDbObjectRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+@Slf4j
 @Component(BusinessErrorWithPersistenceJob.NAME)
 public class BusinessErrorWithPersistenceJob implements Job {
 
@@ -31,6 +33,6 @@ public class BusinessErrorWithPersistenceJob implements Job {
   }
 
   public void executeJobFailed(Long businessObjectId, ExecutionMap map, JobFailedStatus failedStatus) {
-    System.out.println(String.format("Job failed with businessObjectId:%d and status: %s", businessObjectId, failedStatus));
+    log.info("Job failed with businessObjectId:{} and status: {}", businessObjectId, failedStatus);
   }
 }
