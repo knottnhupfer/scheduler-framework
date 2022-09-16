@@ -6,20 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-
 @Slf4j
 @Service
 public class JobsCleanupExecutionScheduler extends AbstractLockedScheduler {
 
-  @Resource
-  private SchedulerConfiguration schedulerConfiguration;
+  private final JobRepository jobRepository;
 
-  @Resource
-  private JobRepository jobRepository;
+  private final SchedulerConfiguration schedulerConfiguration;
 
-  protected JobsCleanupExecutionScheduler() {
+  public JobsCleanupExecutionScheduler(JobRepository jobRepository, SchedulerConfiguration schedulerConfiguration) {
     super(JobsCleanupExecutionScheduler.class.getName(), 15L);
+    this.jobRepository = jobRepository;
+    this.schedulerConfiguration = schedulerConfiguration;
   }
 
   @Scheduled(fixedRateString = "${scheduler.job-execution.jobs-age-cleanup-interval:1800000}")

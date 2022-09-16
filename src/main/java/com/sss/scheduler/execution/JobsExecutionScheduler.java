@@ -17,7 +17,7 @@ public class JobsExecutionScheduler {
 
   private final LockManager lockManager;
 
-  private final JobsExecutor jobsExecutor;
+  private final JobsExecutorService jobsExecutorService;
 
   private final JobRepository jobRepository;
 
@@ -27,7 +27,7 @@ public class JobsExecutionScheduler {
     for(JobInstance job : assignedJobs) {
       log.debug("Execute job:{} with id:{}", job.getId(), job.getJobName());
       try {
-        jobsExecutor.executeJob(job.getId());
+        jobsExecutorService.executeJob(job.getId());
       } catch (Exception e) {
         log.error("Error while processing job(id:{}) '{}'. Reason: {}", job.getId(), job.getJobName(), e.getMessage());
       }

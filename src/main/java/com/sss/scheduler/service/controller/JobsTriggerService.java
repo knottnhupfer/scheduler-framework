@@ -1,7 +1,7 @@
 package com.sss.scheduler.service.controller;
 
 import com.sss.scheduler.domain.JobInstance;
-import com.sss.scheduler.execution.JobsExecutor;
+import com.sss.scheduler.execution.JobsExecutorService;
 import com.sss.scheduler.repository.JobRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class JobsTriggerService {
 
   @Resource
-  private JobsExecutor jobsExecutor;
+  private JobsExecutorService jobsExecutorService;
 
   @Resource
   private JobRepository jobRepository;
@@ -42,7 +42,7 @@ public class JobsTriggerService {
                         jobInstance.getId(), jobInstance.getStatus().name()));
       }
       try {
-        jobsExecutor.executeJob(jobInstance.getId());
+        jobsExecutorService.executeJob(jobInstance.getId());
       } catch (Exception e) {
         log.error("Error while processing jobInstance {}. Reason: {}", jobInstance, e.getMessage(), e);
         throw new IllegalArgumentException(String.format("Error while processing jobInstance %s. Reason: %s", jobInstance, e.getMessage()));
