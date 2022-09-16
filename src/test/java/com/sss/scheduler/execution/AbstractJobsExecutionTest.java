@@ -8,10 +8,12 @@ import com.sss.scheduler.service.JobService;
 import com.sss.scheduler.tests.IncreaseByOneJob;
 import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdAndExecutionsJob;
 import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdJob;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AbstractJobsExecutionTest {
 
@@ -26,6 +28,10 @@ public class AbstractJobsExecutionTest {
 
   @Resource
   protected JobsExecutionScheduler jobsExecutionScheduler;
+
+  protected String createNewJob(String jobName) {
+    return createNewJob(jobName, UUID.randomUUID().toString(), 1, 1L).get(0);
+  }
 
   protected String createNewJob(String jobName, String counterName) {
     return createNewJob(jobName, counterName, 1, 1L).get(0);
@@ -57,5 +63,13 @@ public class AbstractJobsExecutionTest {
 
     jobsExecutionScheduler.executeAssignedJobs();
     return jobRepository.findById(job.getId()).get();
+  }
+
+  protected void assignCreatedJob(String jobName) {
+    JobInstance job = jobRepository.findAllJobsByName(jobName).get(0);
+    Assert.notNull(job, "No job found for name: '" + jobName + "'");
+    job.setExecuteBy(lockManager.getDefaultLockName());
+    job.setExecutions(0L);
+    jobRepository.save(job);
   }
 }

@@ -26,7 +26,11 @@ public class JobsExecutionScheduler {
     List<JobInstance> assignedJobs = jobRepository.findAssignedjobs(lockManager.getDefaultLockName());
     for(JobInstance job : assignedJobs) {
       log.debug("Execute job:{} with id:{}", job.getId(), job.getJobName());
-      jobsExecutor.executeJob(job.getId());
+      try {
+        jobsExecutor.executeJob(job.getId());
+      } catch (Exception e) {
+        log.error("Error while processing job(id:{}) '{}'. Reason: {}", job.getId(), job.getJobName(), e.getMessage());
+      }
     }
   }
 }

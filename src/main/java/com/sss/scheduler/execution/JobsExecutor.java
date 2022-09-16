@@ -38,7 +38,7 @@ public class JobsExecutor {
   private final ExecutionConfigurationProvider executionConfigurationProvider;
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void executeJob(Long jobInstanceId) {
+  public void executeJob(Long jobInstanceId) throws Exception {
     JobInstance job = jobService.loadJobInstance(jobInstanceId);
     long startTime = System.currentTimeMillis();
     try {
@@ -80,14 +80,12 @@ public class JobsExecutor {
     job.setLastExecutionDate(Instant.ofEpochMilli(startTime));
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void executeJob(String jobName, Long businessObjectId, ExecutionMap map) throws Exception {
+  void executeJob(String jobName, Long businessObjectId, ExecutionMap map) {
     Job job = loadJob(jobName);
     job.execute(businessObjectId, map);
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void executeJobFailed(String jobName, Long businessObjectId, ExecutionMap map, JobFailedStatus status) throws Exception {
+  private void executeJobFailed(String jobName, Long businessObjectId, ExecutionMap map, JobFailedStatus status) {
     try {
       Job job = loadJob(jobName);
       job.executeJobFailed(businessObjectId, map, status);

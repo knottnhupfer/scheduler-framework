@@ -3,9 +3,7 @@ package com.sss.scheduler.execution;
 import com.sss.scheduler.domain.JobInstance;
 import com.sss.scheduler.domain.JobStatus;
 import com.sss.scheduler.repository.JobRepository;
-import com.sss.scheduler.tests.IncreaseByOneJob;
-import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdAndExecutionsJob;
-import com.sss.scheduler.tests.IncreaseByOneWithBusinessObjectIdJob;
+import com.sss.scheduler.tests.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -55,11 +53,11 @@ public class JobsExecutionSchedulerTests extends AbstractJobsExecutionTest {
   @Test
   public void businessExceptionTest() {
     jobRepository.deleteAll();
-    createNewJob("businessErrorJob", "dummyCounter");
-    assignCreatedJob("businessErrorJob");
+    createNewJob(BusinessErrorJob.NAME);
+    assignCreatedJob(BusinessErrorJob.NAME);
     jobsExecutionScheduler.executeAssignedJobs();
 
-    JobInstance job = jobRepository.findAllJobsByName("businessErrorJob").get(0);
+    JobInstance job = jobRepository.findAllJobsByName(BusinessErrorJob.NAME).get(0);
     Assert.assertNull(job.getExecuteBy());
     Assert.assertNull(job.getReservedUntil());
     Assert.assertNull(job.getNextExecutionDate());
@@ -69,6 +67,36 @@ public class JobsExecutionSchedulerTests extends AbstractJobsExecutionTest {
     Assert.assertEquals(Long.valueOf(1L), job.getExecutions());
     Assert.assertEquals(JobStatus.BUSINESS_ERROR, job.getStatus());
     Assert.assertEquals("Business error happened.", job.getExecutionResultMessage());
+  }
+
+  @Test
+  public void randomRuntimeExceptionTest() {
+    jobRepository.deleteAll();
+    createNewJob(RuntimeExceptionErrorJob.NAME);
+    assignCreatedJob(RuntimeExceptionErrorJob.NAME);
+    jobsExecutionScheduler.executeAssignedJobs();
+
+    JobInstance job = jobRepository.findAllJobsByName(RuntimeExceptionErrorJob.NAME).get(0);
+    Assert.assertNull(job.getExecuteBy());
+    Assert.assertNull(job.getReservedUntil());
+    Assert.assertNotNull(job.getNextExecutionDate());
+    Assert.assertNotNull(job.getLastExecutionDate());
+    Assert.assertNotNull(job.getExecutionDuration());
+
+    Assert.assertEquals(Long.valueOf(1L), job.getExecutions());
+    Assert.assertEquals(JobStatus.ERRORNOUS_RETRIGGER, job.getStatus());
+    Assert.assertEquals("Runtime exception error happened.", job.getExecutionResultMessage());
+
+//    assignCreatedJob(RuntimeExceptionErrorJob.NAME);
+//    jobsExecutionScheduler.executeAssignedJobs();
+//    job = jobRepository.findAllJobsByName(RuntimeExceptionErrorJob.NAME).get(0);
+//    Assert.assertEquals(Long.valueOf(2L), job.getExecutions());
+
+//    assignCreatedJob(RuntimeExceptionErrorJob.NAME);
+//    jobsExecutionScheduler.executeAssignedJobs();
+//    job = jobRepository.findAllJobsByName(RuntimeExceptionErrorJob.NAME).get(0);
+//    Assert.assertEquals(Long.valueOf(3L), job.getExecutions());
+//    Assert.assertEquals(JobStatus.ERRORNOUS_RETRIGGER, job.getStatus());
   }
 
   @Test
@@ -108,12 +136,5 @@ public class JobsExecutionSchedulerTests extends AbstractJobsExecutionTest {
     jobsExecutionScheduler.executeAssignedJobs();
     passedBusinessObjectId = IncreaseByOneWithBusinessObjectIdAndExecutionsJob.getJobExecutions(jobExecutionsName);
     Assertions.assertEquals(1L, passedBusinessObjectId.longValue());
-  }
-
-  private void assignCreatedJob(String jobName) {
-    JobInstance job = jobRepository.findAllJobsByName(jobName).get(0);
-    job.setExecuteBy(lockManager.getDefaultLockName());
-    job.setExecutions(0L);
-    jobRepository.save(job);
   }
 }

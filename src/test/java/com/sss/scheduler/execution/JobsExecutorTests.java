@@ -1,6 +1,8 @@
 package com.sss.scheduler.execution;
 
 import com.sss.scheduler.domain.JobMap;
+import com.sss.scheduler.tests.BusinessErrorJob;
+import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,16 +12,16 @@ import javax.annotation.Resource;
 import static org.junit.Assert.fail;
 
 @SpringBootTest
-public class JobsExecutorTests {
+public class JobsExecutorTests extends AbstractJobsExecutionTest {
 
   @Resource
   private JobsExecutor jobsExecutor;
 
-  @Resource
-  private JobsExecutionScheduler jobsExecutionScheduler;
-
-  @Resource
-  private JobsAssignmentScheduler jobsAssignmentScheduler;
+//  @Resource
+//  private JobsExecutionScheduler jobsExecutionScheduler;
+//
+//  @Resource
+//  private JobsAssignmentScheduler jobsAssignmentScheduler;
 
   @Test
   public void noJobFound() {
@@ -52,7 +54,9 @@ public class JobsExecutorTests {
 
   @Test
   public void executeBusinessErrorJob() {
-    jobsAssignmentScheduler.assignJobsToExecute();
+    jobRepository.deleteAll();
+    createNewJob("businessErrorJob", "dummyCounter");
+    assignCreatedJob("businessErrorJob");
     jobsExecutionScheduler.executeAssignedJobs();
 
     try {
