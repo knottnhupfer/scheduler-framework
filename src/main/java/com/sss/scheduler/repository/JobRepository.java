@@ -51,14 +51,14 @@ public interface JobRepository extends JpaRepository<JobInstance, Long> {
     return alreadyAssignedJobs;
   }
 
-  @Query("SELECT c.id FROM jobs c WHERE c.reservedUntil IS NULL AND c.status IN :openStatus AND c.nextExecutionDate < :now ORDER BY c.priority, c.creationDate ASC")
+  @Query("SELECT c.id FROM jobs c WHERE c.reservedUntil IS NULL AND c.status IN :openStatus AND c.nextExecutionDate < :now ORDER BY c.priority DESC, c.creationDate ASC")
   List<Long> findJobsToAssign(
           @Param("now") Instant now, @Param("openStatus") List<JobStatus> openStatus, Pageable pageable);
 
   @Query("SELECT c.id FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.creationDate ASC")
   List<Long> findAlreadyAssignedJobs(@Param("executedBy") String executedBy);
 
-  @Query("SELECT c FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.priority ASC, c.creationDate ASC")
+  @Query("SELECT c FROM jobs c WHERE c.executeBy = :executedBy ORDER BY c.priority DESC, c.creationDate ASC")
   List<JobInstance> findAssignedjobs(@Param("executedBy") String executedBy);
 
   default List<JobInstance> findJobsByStates(List<JobStatus> status, Instant from, Instant to, int maxJobs) {
